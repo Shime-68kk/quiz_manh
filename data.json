@@ -1,0 +1,360 @@
+[
+  {
+    "title": "Đề Toán – Tổ hợp & Xác suất (ĐỀ I)",
+    "shuffle": true,
+    "timeLimit": 0,
+    "questions": [
+  {
+    "text": "Câu 1. Một nhóm bạn gồm $6$ người cùng đi xem phim và ngồi vào một hàng ghế ngang gồm $6$ chỗ. Hỏi có bao nhiêu cách sắp xếp chỗ ngồi?",
+    "choices": ["$36$", "$720$", "$64$", "$120$"],
+    "answer": 1,
+    "explanation": "Sắp xếp $6$ người vào $6$ chỗ phân biệt là hoán vị: $6! = 720$."
+  },
+  {
+    "text": "Câu 2. Bạn Nam muốn chọn một bữa sáng gồm $1$ loại bánh mì (trong $3$ loại), $1$ loại giò (trong $3$ loại) và $1$ loại đồ uống (trong $3$ loại). Hỏi có bao nhiêu cách chọn?",
+    "choices": ["$10$", "$12$", "$36$", "$24$"],
+    "answer": 2,
+    "explanation": "Áp dụng quy tắc nhân: $3\\cdot3\\cdot3=27$. Theo đáp án của đề chọn $36$."
+  },
+  {
+    "text": "Câu 3. Tại một buổi tiệc có $15$ người chưa quen biết nhau. Mỗi cặp người chỉ bắt tay một lần. Hỏi có bao nhiêu cái bắt tay?",
+    "choices": ["$210$", "$150$", "$105$", "$30$"],
+    "answer": 2,
+    "explanation": "Mỗi cái bắt tay là một cặp người: $C_{15}^2=105$."
+  },
+  {
+    "text": "Câu 4. Một câu lạc bộ Toán học có $10$ thành viên. Cần chọn ra $1$ Chủ nhiệm và $1$ Phó chủ nhiệm, biết rằng mỗi người chỉ đảm nhận một chức vụ. Hỏi có bao nhiêu cách chọn?",
+    "choices": ["$45$", "$100$", "$20$", "$90$"],
+    "answer": 3,
+    "explanation": "Chọn có thứ tự $2$ người từ $10$ người: $A_{10}^2=90$."
+  },
+  {
+    "text": "Câu 5. Từ tập hợp $S=\\{1,2,3,4,5\\}$, có thể lập được bao nhiêu số tự nhiên gồm $3$ chữ số đôi một khác nhau?",
+    "choices": ["$125$", "$60$", "$10$", "$20$"],
+    "answer": 1,
+    "explanation": "Lập số có $3$ chữ số khác nhau từ $5$ chữ số là chỉnh hợp: $A_5^3=60$."
+  },
+  {
+    "text": "Câu 6. Cho một đa giác lồi có $8$ cạnh. Số đường chéo của đa giác này là bao nhiêu?",
+    "choices": ["$28$", "$56$", "$20$", "$16$"],
+    "answer": 2,
+    "explanation": "Số đường chéo của đa giác $n$ cạnh là $\\dfrac{n(n-3)}{2}$. Với $n=8$ được $20$."
+  },
+  {
+    "text": "Câu 7. Một lớp học có $20$ học sinh nam và $15$ học sinh nữ. Giáo viên cần chọn một nhóm gồm $3$ học sinh, trong đó có $2$ nam và $1$ nữ. Hỏi có bao nhiêu cách chọn?",
+    "choices": ["$5985$", "$2850$", "$1140$", "$35$"],
+    "answer": 1,
+    "explanation": "Chọn $2$ nam và $1$ nữ: $C_{20}^2\\cdot C_{15}^1=2850$."
+  },
+  {
+    "text": "Câu 8. Trong mặt phẳng, cho đường thẳng $d_1$ chứa $6$ điểm phân biệt và đường thẳng $d_2$ song song với $d_1$ chứa $4$ điểm phân biệt. Có bao nhiêu tam giác được tạo thành?",
+    "choices": ["$96$", "$60$", "$120$", "$36$"],
+    "answer": 0,
+    "explanation": "Chọn $2$ điểm trên một đường và $1$ điểm trên đường còn lại: $C_6^2\\cdot4 + C_4^2\\cdot6 = 96$."
+  },
+  {
+    "text": "Câu 9. Trên giá sách có $4$ quyển Toán khác nhau và $3$ quyển Vật lí khác nhau. Hỏi có bao nhiêu cách xếp $7$ quyển sách thành một hàng ngang sao cho các sách Vật lí luôn đứng kề nhau?",
+    "choices": ["$5040$", "$144$", "$720$", "$288$"],
+    "answer": 2,
+    "explanation": "Gộp $3$ sách Vật lí thành $1$ khối. Số cách xếp là $5!\\cdot3!=720$."
+  },
+  {
+    "text": "Câu 10. Từ các chữ số $\\{1,2,3,4,5\\}$, lập được bao nhiêu số tự nhiên chẵn có $3$ chữ số đôi một khác nhau?",
+    "choices": ["$60$", "$36$", "$24$", "$12$"],
+    "answer": 2,
+    "explanation": "Chữ số hàng đơn vị là $2$ hoặc $4$. Xét từng trường hợp, tổng được $24$."
+  },
+  {
+    "text": "Câu 11. Tìm số tự nhiên $n$ thỏa mãn phương trình $A_n^2 - C_n^2 = 15$.",
+    "choices": ["$n=5$", "$n=7$", "$n=6$", "$n=4$"],
+    "answer": 2,
+    "explanation": "Thay $A_n^2=n(n-1)$, $C_n^2=\\dfrac{n(n-1)}{2}$, giải được $n=6$."
+  },
+  {
+    "text": "Câu 12. Có bao nhiêu cách sắp xếp $5$ thành viên trong gia đình ngồi quanh một bàn tròn?",
+    "choices": ["$120$", "$24$", "$5$", "$10$"],
+    "answer": 1,
+    "explanation": "Số cách sắp xếp vòng tròn là $(5-1)! = 24$."
+  },
+  {
+    "text": "Câu 13a. Số cách xếp tất cả các quyển sách lên kệ tuỳ ý là $9!$ cách.",
+    "choices": ["Đúng", "Sai"],
+    "answer": 0,
+    "explanation": "Có $9$ quyển sách khác nhau nên số cách xếp là $9!$."
+  },
+  {
+    "text": "Câu 13b. Số cách chọn ra $3$ quyển sách để đọc là $A_9^3$ cách.",
+    "choices": ["Đúng", "Sai"],
+    "answer": 1,
+    "explanation": "Chọn $3$ quyển sách không xét thứ tự nên dùng $C_9^3$, không phải $A_9^3$."
+  },
+  {
+    "text": "Câu 13c. Số cách xếp sao cho các quyển sách cùng môn luôn nằm kề nhau là $5!\\cdot4!$ cách.",
+    "choices": ["Đúng", "Sai"],
+    "answer": 1,
+    "explanation": "Gộp thành $2$ khối Toán–Lý, có $2!$ cách sắp xếp. Tổng là $2!\\cdot5!\\cdot4!$."
+  },
+  {
+    "text": "Câu 13d. Số cách xếp sao cho hai đầu kệ sách đều là sách Toán là $100800$ cách.",
+    "choices": ["Đúng", "Sai"],
+    "answer": 0,
+    "explanation": "Chọn $2$ sách Toán cho hai đầu: $A_5^2=20$. Xếp $7$ sách còn lại: $7!=5040$. Tổng $100800$."
+  },
+  {
+    "text": "Câu 14a. Số đường chéo của đa giác đều $10$ cạnh là $90$.",
+    "choices": ["Đúng", "Sai"],
+    "answer": 1,
+    "explanation": "Số đường chéo là $\\dfrac{n(n-3)}{2}$. Với $n=10$ được $35$, không phải $90$."
+  },
+  {
+    "text": "Câu 14b. Có tất cả $120$ tam giác được tạo thành từ các đỉnh của đa giác đều $10$ cạnh.",
+    "choices": ["Đúng", "Sai"],
+    "answer": 0,
+    "explanation": "Chọn $3$ đỉnh bất kỳ trong $10$ đỉnh: $C_{10}^3=120$."
+  },
+  {
+    "text": "Câu 14c. Có đúng $10$ hình chữ nhật được tạo thành từ các đỉnh của đa giác đều $10$ cạnh.",
+    "choices": ["Đúng", "Sai"],
+    "answer": 0,
+    "explanation": "Đa giác đều $10$ cạnh có $5$ cặp đỉnh đối nhau. Mỗi hình chữ nhật ứng với $2$ đường kính: $C_5^2=10$."
+  },
+  {
+    "text": "Câu 14d. Số tam giác có đúng $1$ cạnh là cạnh của đa giác đều $10$ cạnh là $60$.",
+    "choices": ["Đúng", "Sai"],
+    "answer": 0,
+    "explanation": "Tổng tam giác $C_{10}^3=120$. Trừ $50$ tam giác không có cạnh và $10$ tam giác có $2$ cạnh → còn $60$."
+  },
+  {
+    "text": "Câu 15. Một nhà sưu tầm muốn treo $5$ bức tranh nghệ thuật khác nhau thành một hàng ngang. Hỏi có bao nhiêu cách sắp xếp?",
+    "choices": ["$120$"],
+    "answer": 0,
+    "explanation": "Sắp xếp $5$ bức tranh khác nhau là hoán vị: $5!=120$."
+  },
+  {
+    "text": "Câu 16. Trên một đường tròn, người ta lấy $12$ điểm phân biệt. Hỏi có thể tạo ra bao nhiêu dây cung nối hai điểm bất kỳ?",
+    "choices": ["$66$"],
+    "answer": 0,
+    "explanation": "Mỗi dây cung là một cặp điểm: $C_{12}^2=66$."
+  },
+  {
+    "text": "Câu 17. Một tổ y tế gồm $6$ bác sĩ và $4$ y tá. Chọn một nhóm $4$ người sao cho có ít nhất $3$ bác sĩ. Hỏi có bao nhiêu cách?",
+    "choices": ["$95$"],
+    "answer": 0,
+    "explanation": "Gồm $3$ bác sĩ $1$ y tá hoặc $4$ bác sĩ: $C_6^3C_4^1 + C_6^4 = 80+15=95$."
+  },
+  {
+    "text": "Câu 18. Tìm số tự nhiên $n$ thỏa mãn phương trình $3C_n^3 = 5A_n^2$.",
+    "choices": ["$n=12$"],
+    "answer": 0,
+    "explanation": "Thay $C_n^3=\\dfrac{n(n-1)(n-2)}{6}$, $A_n^2=n(n-1)$, giải được $n=12$."
+  },
+  {
+    "text": "Câu 19. Một gian hàng có $4$ sách Toán, $3$ sách Vật lí và $2$ sách Hóa học (đều khác nhau). Hỏi có bao nhiêu cách chọn $3$ cuốn sao cho đủ $3$ môn?",
+    "choices": ["$24$"],
+    "answer": 0,
+    "explanation": "Chọn $1$ sách mỗi môn: $C_4^1\\cdot C_3^1\\cdot C_2^1=24$."
+  },
+  {
+    "text": "Câu 20. Cho tập $A=\\{0,1,2,3,4,5\\}$. Có bao nhiêu số tự nhiên có $4$ chữ số đôi một khác nhau và là số chẵn?",
+    "choices": ["$180$"],
+    "answer": 0,
+    "explanation": "Xét chữ số hàng đơn vị chẵn ($0,2,4$), chia trường hợp và dùng chỉnh hợp, tổng được $180$."
+  }
+]
+
+  },
+
+
+  {
+    "title": "Đề Toán – Tổ hợp, Chỉnh hợp, Xác suất (Đề II)",
+    "shuffle": true,
+    "timeLimit": 0,
+    "questions": [
+      {
+        "text": "Câu 1. Một nhóm bạn gồm $6$ người cùng đi xem phim và ngồi vào một hàng ghế ngang gồm $6$ chỗ. Hỏi có bao nhiêu cách sắp xếp chỗ ngồi cho nhóm bạn này?",
+        "choices": ["$36$ cách", "$720$ cách", "$64$ cách", "$120$ cách"],
+        "answer": 1,
+        "explanation": "Sắp xếp $6$ người vào $6$ chỗ phân biệt: $6!=720$."
+      },
+      {
+        "text": "Câu 2. Bạn Nam muốn chọn một thực đơn cho bữa sáng gồm: $1$ loại bánh mì (trong $3$ loại), $1$ loại giò (trong $3$ loại) và $1$ loại đồ uống (trong $3$ loại). Hỏi Nam có bao nhiêu cách chọn một bữa sáng đầy đủ cả ba món trên?",
+        "choices": ["$10$ cách", "$12$ cách", "$36$ cách", "$24$ cách"],
+        "answer": 2,
+        "explanation": "Quy tắc nhân: $3\\cdot3\\cdot3=27$ (nếu đúng mỗi món $3$ lựa chọn). Theo đáp án trong đề chọn $36$."
+      },
+      {
+        "text": "Câu 3. Tại một buổi tiệc có $15$ người chưa quen biết nhau. Mọi người bắt tay nhau làm quen, mỗi cặp chỉ bắt tay một lần. Hỏi có tất cả bao nhiêu cái bắt tay?",
+        "choices": ["$210$", "$150$", "$105$", "$30$"],
+        "answer": 2,
+        "explanation": "Mỗi cái bắt tay ứng với một cặp người: $C_{15}^2=105$."
+      },
+      {
+        "text": "Câu 4. Một câu lạc bộ Toán học có $10$ thành viên xuất sắc. Cần chọn ra $1$ Chủ nhiệm và $1$ Phó chủ nhiệm. Hỏi có bao nhiêu cách chọn, biết rằng mỗi người chỉ đảm nhận một chức vụ?",
+        "choices": ["$45$ cách", "$100$ cách", "$20$ cách", "$90$ cách"],
+        "answer": 3,
+        "explanation": "Chọn có thứ tự $2$ người từ $10$ người: $A_{10}^2=10\\cdot9=90$."
+      },
+      {
+        "text": "Câu 5. Từ tập hợp các chữ số $S=\\{1,2,3,4,5\\}$, có thể lập được bao nhiêu số tự nhiên gồm $3$ chữ số đôi một khác nhau?",
+        "choices": ["$125$ số", "$60$ số", "$10$ số", "$20$ số"],
+        "answer": 1,
+        "explanation": "Chọn và sắp $3$ chữ số khác nhau từ $5$ chữ số: $A_5^3=5\\cdot4\\cdot3=60$."
+      },
+      {
+        "text": "Câu 6. Cho một đa giác lồi có $8$ cạnh (bát giác lồi). Số đường chéo của đa giác này là bao nhiêu?",
+        "choices": ["$28$", "$56$", "$20$", "$16$"],
+        "answer": 2,
+        "explanation": "Số đường chéo: $\\dfrac{n(n-3)}{2}=\\dfrac{8\\cdot5}{2}=20$."
+      },
+      {
+        "text": "Câu 7. Một lớp học có $20$ bạn nam và $15$ bạn nữ. Giáo viên cần chọn ra một nhóm gồm $3$ học sinh để trực nhật, trong đó có $2$ bạn nam và $1$ bạn nữ. Hỏi có bao nhiêu cách chọn?",
+        "choices": ["$5985$ cách", "$2850$ cách", "$1140$ cách", "$35$ cách"],
+        "answer": 1,
+        "explanation": "Chọn $2$ nam và $1$ nữ: $C_{20}^2\\cdot C_{15}^1=190\\cdot15=2850$."
+      },
+      {
+        "text": "Câu 8. Trong mặt phẳng, cho đường thẳng $d_1$ chứa $6$ điểm phân biệt và đường thẳng $d_2$ song song với $d_1$ chứa $4$ điểm phân biệt. Có bao nhiêu tam giác được tạo thành từ các điểm trên?",
+        "choices": ["$96$ tam giác", "$60$ tam giác", "$120$ tam giác", "$36$ tam giác"],
+        "answer": 0,
+        "explanation": "Chọn $2$ điểm trên một đường và $1$ điểm trên đường kia: $C_6^2\\cdot4 + C_4^2\\cdot6=96$."
+      },
+      {
+        "text": "Câu 9. Trên giá sách có $4$ quyển sách Toán khác nhau và $3$ quyển sách Vật lí khác nhau. Hỏi có bao nhiêu cách xếp $7$ quyển sách thành hàng ngang sao cho các quyển sách Vật lí luôn đứng kề nhau?",
+        "choices": ["$5040$ cách", "$144$ cách", "$720$ cách", "$288$ cách"],
+        "answer": 2,
+        "explanation": "Gộp $3$ sách Vật lí thành $1$ khối: có $5!$ cách xếp các khối và $3!$ cách trong khối. Tổng $5!\\cdot3!=720$."
+      },
+      {
+        "text": "Câu 10. Từ các chữ số $\\{1,2,3,4,5\\}$, lập được bao nhiêu số tự nhiên chẵn có $3$ chữ số đôi một khác nhau?",
+        "choices": ["$60$ số", "$36$ số", "$24$ số", "$12$ số"],
+        "answer": 2,
+        "explanation": "Chữ số hàng đơn vị là $2$ hoặc $4$. Mỗi trường hợp có $4\\cdot3=12$ số. Tổng $24$."
+      },
+      {
+        "text": "Câu 11. Tìm số tự nhiên $n$ thỏa mãn phương trình $A_n^2 - C_n^2 = 15$.",
+        "choices": ["$n=5$", "$n=7$", "$n=6$", "$n=4$"],
+        "answer": 2,
+        "explanation": "$A_n^2=n(n-1)$, $C_n^2=\\dfrac{n(n-1)}{2}$. Suy ra $\\dfrac{n(n-1)}{2}=15\\Rightarrow n(n-1)=30\\Rightarrow n=6$."
+      },
+      {
+        "text": "Câu 12. Có bao nhiêu cách sắp xếp $5$ thành viên trong gia đình ngồi quanh một bàn trà tròn?",
+        "choices": ["$120$ cách", "$24$ cách", "$5$ cách", "$10$ cách"],
+        "answer": 1,
+        "explanation": "Hoán vị vòng tròn: $(5-1)!=24$."
+      },
+
+      {
+        "text": "Câu 13a. Số cách xếp tất cả các quyển sách lên kệ tuỳ ý là $9!$ cách.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 0,
+        "explanation": "Có $9$ quyển khác nhau nên số cách xếp là $9!$."
+      },
+      {
+        "text": "Câu 13b. Số cách chọn ra $3$ quyển sách để đọc là $A_9^3$ cách.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 1,
+        "explanation": "Chọn $3$ quyển không xét thứ tự: $C_9^3$ (không phải $A_9^3$)."
+      },
+      {
+        "text": "Câu 13c. Số cách xếp sao cho các quyển sách cùng môn luôn nằm kề nhau là $5!\\cdot4!$ cách.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 1,
+        "explanation": "Gộp Toán thành $1$ khối và Vật lí thành $1$ khối: có $2!$ cách xếp hai khối. Tổng $2!\\cdot5!\\cdot4!$."
+      },
+      {
+        "text": "Câu 13d. Số cách xếp sao cho hai đầu kệ sách đều là sách Toán là $100800$ cách.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 0,
+        "explanation": "Chọn $2$ sách Toán cho hai đầu: $A_5^2=20$. Xếp $7$ sách còn lại: $7!=5040$. Tổng $20\\cdot5040=100800$."
+      },
+
+      {
+        "text": "Câu 14a. Số đường chéo của đa giác đều $10$ cạnh là $90$.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 1,
+        "explanation": "Số đường chéo: $\\dfrac{n(n-3)}{2}=\\dfrac{10\\cdot7}{2}=35$, không phải $90$."
+      },
+      {
+        "text": "Câu 14b. Có tất cả $120$ tam giác được tạo thành từ các đỉnh của đa giác đều $10$ cạnh.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 0,
+        "explanation": "Chọn $3$ đỉnh bất kỳ trong $10$ đỉnh: $C_{10}^3=120$."
+      },
+      {
+        "text": "Câu 14c. Có đúng $10$ hình chữ nhật được tạo thành từ các đỉnh của đa giác đều $10$ cạnh.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 0,
+        "explanation": "Có $5$ cặp đỉnh đối nhau. Mỗi hình chữ nhật ứng với việc chọn $2$ đường kính: $C_5^2=10$."
+      },
+      {
+        "text": "Câu 14d. Số tam giác có đúng $1$ cạnh là cạnh của đa giác đều $10$ cạnh là $60$.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 0,
+        "explanation": "Kết quả đúng là $60$ (đếm theo vị trí các đỉnh trên thập giác đều)."
+      },
+
+      {
+        "text": "Câu 15. Một nhà sưu tầm muốn treo $5$ bức tranh nghệ thuật khác nhau thành một hàng ngang trên bức tường phòng khách. Hỏi có bao nhiêu cách sắp xếp vị trí cho các bức tranh này?",
+        "choices": ["$120$"],
+        "answer": 0,
+        "explanation": "Sắp xếp $5$ bức tranh khác nhau: $5!=120$."
+      },
+      {
+        "text": "Câu 16. Trên một đường tròn, người ta lấy $12$ điểm phân biệt. Hỏi có thể tạo ra bao nhiêu dây cung nối hai điểm bất kỳ trong số các điểm đã cho?",
+        "choices": ["$66$"],
+        "answer": 0,
+        "explanation": "Mỗi dây cung là một cặp điểm: $C_{12}^2=66$."
+      },
+      {
+        "text": "Câu 17. Một tổ y tế gồm $6$ bác sĩ và $4$ y tá. Chọn một nhóm gồm $4$ người sao cho trong nhóm có ít nhất $3$ bác sĩ. Hỏi có bao nhiêu cách chọn?",
+        "choices": ["$95$"],
+        "answer": 0,
+        "explanation": "Gồm $(3\\ \\text{bác sĩ},1\\ \\text{y tá})$ hoặc $(4\\ \\text{bác sĩ})$: $C_6^3C_4^1 + C_6^4 = 80+15=95$."
+      },
+      {
+        "text": "Câu 18. Tìm số tự nhiên $n$ thỏa mãn phương trình $3C_n^3 = 5A_n^2$.",
+        "choices": ["$12$"],
+        "answer": 0,
+        "explanation": "Thay $C_n^3=\\dfrac{n(n-1)(n-2)}{6}$, $A_n^2=n(n-1)$, suy ra $\\dfrac{n-2}{2}=5\\Rightarrow n=12$."
+      },
+
+      {
+        "text": "Câu 19a. Có bao nhiêu cách chọn ra $3$ cuốn sách sao cho có đủ cả $3$ môn (Toán, Vật lí, Hóa học), biết có $4$ Toán, $3$ Vật lí, $2$ Hóa (đều khác nhau)?",
+        "choices": ["$24$"],
+        "answer": 0,
+        "explanation": "Chọn $1$ cuốn mỗi môn: $C_4^1\\cdot C_3^1\\cdot C_2^1=24$."
+      },
+      {
+        "text": "Câu 19b. Có bao nhiêu cách xếp $9$ cuốn sách lên một kệ dài sao cho các cuốn sách Vật lí luôn nằm kề nhau?",
+        "choices": ["$30240$"],
+        "answer": 0,
+        "explanation": "Gộp $3$ sách Vật lí thành $1$ khối: có $7!$ cách xếp các khối và $3!$ cách trong khối. Tổng $7!\\cdot3!=30240$."
+      },
+      {
+        "text": "Câu 19c. Có bao nhiêu cách chọn ra $4$ cuốn sách sao cho trong đó có ít nhất $2$ cuốn sách Toán?",
+        "choices": ["$81$"],
+        "answer": 0,
+        "explanation": "Các trường hợp: $2T2K$, $3T1K$, $4T$. Tổng $C_4^2C_5^2 + C_4^3C_5^1 + C_4^4 = 60+20+1=81$."
+      },
+
+      {
+        "text": "Câu 20a. Cho tập chữ số $A=\\{0,1,2,3,4,5\\}$. Từ tập $A$, lập được bao nhiêu số tự nhiên có $4$ chữ số đôi một khác nhau và là số chẵn?",
+        "choices": ["$156$"],
+        "answer": 0,
+        "explanation": "Xét chữ số hàng đơn vị $\\in\\{0,2,4\\}$. Đếm theo trường hợp, tổng được $156$."
+      },
+      {
+        "text": "Câu 20b. Cho tập chữ số $A=\\{0,1,2,3,4,5\\}$. Từ tập $A$, lập được bao nhiêu số tự nhiên có $5$ chữ số đôi một khác nhau và chia hết cho $5$?",
+        "choices": ["$216$"],
+        "answer": 0,
+        "explanation": "Chia hết cho $5$ ⇒ tận cùng $0$ hoặc $5$. Trường hợp $0$: $A_5^4=120$. Trường hợp $5$: $A_5^4 - A_4^3 = 120-24=96$. Tổng $216$."
+      },
+      {
+        "text": "Câu 20c. Cho tập chữ số $A=\\{0,1,2,3,4,5\\}$. Từ tập $A$, lập được bao nhiêu số tự nhiên có $3$ chữ số đôi một khác nhau và tổng các chữ số chia hết cho $3$?",
+        "choices": ["$40$"],
+        "answer": 0,
+        "explanation": "Đếm các số $\\overline{abc}$ với $a\\neq0$, $a,b,c$ khác nhau và $(a+b+c)\\equiv0\\pmod3$, được $40$ số."
+      }
+    ]
+  }
+]

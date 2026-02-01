@@ -1,0 +1,1379 @@
+const $ = (sel)=>document.querySelector(sel);
+const $$ = (sel)=>Array.from(document.querySelectorAll(sel));
+// ===== Mobile tools menu =====
+(function setupMobileToolsMenu(){
+  const btnTools = document.getElementById('btnTools');
+  const menu = document.getElementById('toolMenu');
+  const mLoadJson = document.getElementById('mLoadJson');
+  const mLoadTextbook = document.getElementById('mLoadTextbook');
+  const mTheme = document.getElementById('mTheme');
+
+  if (!btnTools || !menu) return;
+
+  const closeMenu = () => menu.classList.remove('show');
+  const toggleMenu = () => menu.classList.toggle('show');
+
+  btnTools.addEventListener('click', (e) => {
+    e.stopPropagation();
+    toggleMenu();
+  });
+
+  // Actions
+  mLoadJson?.addEventListener('click', () => { closeMenu(); $('#fileInput').click(); });
+  mLoadTextbook?.addEventListener('click', () => { closeMenu(); openTextbookImporter(); });
+  mTheme?.addEventListener('click', () => { closeMenu(); toggleTheme(); });
+
+  // Click outside to close
+  document.addEventListener('click', (e) => {
+    if (!menu.contains(e.target) && e.target !== btnTools) closeMenu();
+  });
+
+  // Close on resize (vd xoay màn hình)
+  window.addEventListener('resize', closeMenu);
+})();
+
+(() => {
+  const box = document.getElementById('qChoices');
+  if (!box) return;
+
+  box.addEventListener('pointerdown', (e) => {
+    const choice = e.target.closest('.choice');
+    if (!choice) return;
+
+    const index = Number(choice.dataset.choice);
+    if (Number.isFinite(index)) selectChoice(index);
+  }, { passive: true });
+})();
+
+function fetchWithTimeout(url, options = {}, timeoutMs = 12000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  return fetch(url, { ...options, signal: ctrl.signal }).finally(() => clearTimeout(t));
+}
+
+    const strip = (s)=> (s??'').toString().trim().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu,'');
+
+    // ===== TEXTBOOK IMPORTER (TXT/MD/HTML -> JSON quiz) =====
+    let __generatedQuizzes = null; // array of quizzes compatible with handleData()
+
+    function openTextbookImporter() {
+      $('#importerModal').style.display = 'flex';
+      $('#importerReport').textContent = '👉 Dán nội dung hoặc chọn file, rồi bấm "Tạo quiz JSON".';
+    }
+    function closeTextbookImporter() {
+      $('#importerModal').style.display = 'none';
+    }
+    function importerPasteExample() {
+      $('#textbookArea').value =
+`CHƯƠNG 1: Mở đầu
+1) Câu 1 là gì?
+A. Đáp án A
+B. Đáp án B
+C. Đáp án C
+D. Đáp án D
+Đáp án: B
+Giải thích: Vì ...
+
+2) Câu 2 ...
+A) ...
+B) ...
+C) ...
+D) ...
+Đáp án: A
+
+CHƯƠNG 2: ...
+1. Câu ...
+A. ...
+B. ...
+C. ...
+D. ...
+Đáp án: D`;
+    }
+
+    $('#textbookInput').onchange = (e) => {
+      const f = e.target.files?.[0];
+      if (!f) return;
+      const r = new FileReader();
+      r.onload = () => {
+        $('#textbookArea').value = String(r.result || '');
+        openTextbookImporter();
+        $('#importerReport').textContent = `✅ Đã nạp file: ${f.name}. Bấm "Tạo quiz JSON".`;
+      };
+      r.readAsText(f, 'utf-8');
+      e.target.value = '';
+    };
+
+    function normalizeLines(raw) {
+      return String(raw || '')
+        .replace(/\r\n/g, '\n')
+        .replace(/\r/g, '\n')
+        .replace(/\u00A0/g, ' ')
+        .split('\n');
+    }
+
+    function parseTextbookToQuizzes(raw, opts = {}) {
+  const {
+    splitByChapter = true,
+    keepAnswerInExplanation = true
+  } = opts;
+
+  const lines = normalizeLines(raw);
+
+  const reChapter = /^\s*(?:ch(?:ươ|u)ơng|chapter)\s*([0-9]+)\s*[:\-.]?\s*(.*)$/i;
+  const reQStart = /^\s*(\d{1,4})\s*[\$\.\:\-]\s*(.+)$/; // "1) ..." or "1. ..."
+  const reChoice = /^\s*([A-D])\s*[\$\.\:\-]\s*(.+)$/i;
+  const reAnswer = /^\s*(?:đáp\s*án|dap\s*an|ans(?:wer)?)\s*[:\-–=]*\s*([A-D](?:\s*(?:,|\/|và|and)\s*[A-D])*)\s*$/i;
+  const reExplain = /^\s*(?:giải\s*thích|giai\s*thich|explain(?:ation)?)\s*[:\-–=]*\s*(.*)$/i;
+
+  function newQuiz(title) {
+    return { title: title || 'Bộ câu hỏi', timeLimit: 0, questions: [] };
+  }
+
+  // -------------------------
+  // PASS 1: scan questions/choices/explanations; answers may be missing
+  // -------------------------
+  let quizzes = [];
+  let curQuiz = newQuiz();
+  let curQ = null;
+  let pendingExplain = [];
+
+  const idxMap = { A:0, B:1, C:2, D:3 };
+
+  function normalizeAnswerRaw(rawAns) {
+    const letters = String(rawAns || "")
+      .toUpperCase()
+      .split(/[,\/]|và|and/i)
+      .map(s => s.trim())
+      .filter(Boolean)
+      .filter(s => /^[A-D]$/.test(s));
+    if (!letters.length) return null;
+    const arr = [...new Set(letters.map(l => idxMap[l]))].sort((a,b)=>a-b);
+    return arr.length === 1 ? arr[0] : arr;
+  }
+
+  function flushQuestion() {
+    if (!curQ) return;
+
+    if (pendingExplain.length) {
+      const exp = pendingExplain.join('\n').trim();
+      if (exp) curQ.explanation = curQ.explanation ? (curQ.explanation + '\n' + exp) : exp;
+      pendingExplain = [];
+    }
+
+    // minimal validation: must have text + >=2 choices
+    if (!curQ.text || !Array.isArray(curQ.choices) || curQ.choices.length < 2) {
+      curQ = null;
+      return;
+    }
+
+    // keep raw answer if missing; DO NOT force answer=0 here
+    if (curQ.answer == null && keepAnswerInExplanation && curQ._rawAnswer) {
+      curQ.explanation = (curQ.explanation ? (curQ.explanation + '\n') : '') + `Đáp án (thô): ${curQ._rawAnswer}`;
+    }
+    delete curQ._rawAnswer;
+
+    curQuiz.questions.push(curQ);
+    curQ = null;
+  }
+
+  function flushQuizIfHasQuestions() {
+    flushQuestion();
+    if (curQuiz.questions.length) quizzes.push(curQuiz);
+  }
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+    if (!line) continue;
+
+    // chapter split
+    const mCh = reChapter.exec(line);
+    if (mCh && splitByChapter) {
+      flushQuizIfHasQuestions();
+      const chapNum = mCh[1];
+      const chapName = (mCh[2] || '').trim();
+      curQuiz = newQuiz(`Chương ${chapNum}${chapName ? ': ' + chapName : ''}`);
+      continue;
+    }
+
+    // question start
+    const mQ = reQStart.exec(line);
+    if (mQ) {
+      flushQuestion();
+      const qno = Number(mQ[1]);
+      curQ = {
+        _qno: Number.isFinite(qno) ? qno : null,
+        text: mQ[2].trim(),
+        choices: [],
+        answer: null,          // number | number[] | null
+        explanation: ''
+      };
+      pendingExplain = [];
+      continue;
+    }
+
+    if (!curQ) continue;
+
+    // choice
+    const mC = reChoice.exec(line);
+    if (mC) {
+      curQ.choices.push(mC[2].trim());
+      continue;
+    }
+
+    // answer line (explicit)
+    const mA = reAnswer.exec(line);
+    if (mA) {
+      const rawAns = mA[1].toUpperCase().trim();
+      curQ._rawAnswer = rawAns;
+      const ans = normalizeAnswerRaw(rawAns);
+      if (ans != null) curQ.answer = ans;
+      continue;
+    }
+
+    // explanation
+    const mE = reExplain.exec(line);
+    if (mE) {
+      const rest = (mE[1] || '').trim();
+      if (rest) pendingExplain.push(rest);
+      continue;
+    }
+
+    // other lines: append to question text if no choices yet; else to explanation
+    if (curQ.choices.length === 0 && curQ.text) {
+      curQ.text += '\n' + line;
+    } else {
+      pendingExplain.push(line);
+    }
+  }
+
+  flushQuizIfHasQuestions();
+
+  // Assign stable ids
+  let runningId = 0;
+  quizzes.forEach(qz => qz.questions.forEach(q => { if (q._id == null) q._id = runningId++; }));
+
+  // -------------------------
+  // PASS 2: If many answers missing, try to parse answer key at end: "1.A 2.B ..." / "1-A 2-C ..."
+  // -------------------------
+  const allQuestions = quizzes.flatMap(qz => qz.questions);
+  const missing = allQuestions.filter(q => q.answer == null).length;
+
+  if (missing > 0) {
+    const ansMap = extractAnswerKeyFromTail(lines);
+    if (ansMap.size) {
+      for (const q of allQuestions) {
+        if (q.answer != null) continue;
+        if (q._qno == null) continue;
+        const raw = ansMap.get(q._qno);
+        if (!raw) continue;
+        const ans = normalizeAnswerRaw(raw);
+        if (ans != null) q.answer = ans;
+      }
+    }
+  }
+
+  // Finalize: for any still-missing answer, set 0 so app works (but mark in explanation)
+  for (const q of allQuestions) {
+    if (q.answer == null) {
+      if (keepAnswerInExplanation) {
+        q.explanation = (q.explanation ? (q.explanation + '\n') : '') + '⚠️ Thiếu đáp án: mặc định chấm A.';
+      }
+      q.answer = 0;
+    }
+  }
+
+  // cleanup internal fields
+  quizzes.forEach(qz => qz.questions.forEach(q => { delete q._qno; }));
+
+  return quizzes;
+
+  // ---- helper: extract answer key from tail ----
+  function extractAnswerKeyFromTail(linesArr) {
+    const map = new Map(); // qno -> "A" or "A,B"
+    const maxScan = 250;   // scan up to last 250 non-empty lines
+    let scanned = 0;
+    let foundAny = false;
+
+    // regex finds multiple pairs per line
+    const pairRe = /(\d{1,4})\s*[\.\-\$\:\s]\s*([A-D])\b/gi;
+
+    for (let i = linesArr.length - 1; i >= 0 && scanned < maxScan; i--) {
+      const ln = String(linesArr[i] || '').trim();
+      if (!ln) continue;
+      scanned++;
+
+      let m;
+      let localCount = 0;
+      pairRe.lastIndex = 0;
+      while ((m = pairRe.exec(ln)) !== null) {
+        const qno = Number(m[1]);
+        const letter = m[2].toUpperCase();
+        if (!Number.isFinite(qno)) continue;
+        // accumulate if repeated => multi-answer (rare, but support)
+        const prev = map.get(qno);
+        map.set(qno, prev ? `${prev},${letter}` : letter);
+        localCount++;
+      }
+
+      if (localCount >= 3) foundAny = true;
+
+      // Heuristic stop: once we've found a dense block and then encounter a line with no pairs, stop scanning
+      if (foundAny && localCount === 0) break;
+    }
+
+    return map;
+  }
+}
+
+    function importerParse() {
+      const raw = $('#textbookArea').value || '';
+      if (!raw.trim()) {
+        $('#importerReport').textContent = '❌ Chưa có nội dung để parse.';
+        return;
+      }
+
+      const splitByChapter = $('#splitByChapter').checked;
+      const keepAnswerInExplanation = $('#keepAnswerInExplanation').checked;
+
+      const quizzes = parseTextbookToQuizzes(raw, { splitByChapter, keepAnswerInExplanation });
+
+      if (!quizzes.length) {
+        __generatedQuizzes = null;
+        $('#btnDownloadGenerated').disabled = true;
+        $('#importerReport').textContent =
+          '❌ Không parse được câu hỏi. Gợi ý: đảm bảo có dạng "1) ...", lựa chọn "A. ...", và dòng "Đáp án: B".';
+        return;
+      }
+
+      __generatedQuizzes = quizzes;
+      $('#btnDownloadGenerated').disabled = false;
+
+      const totalQ = quizzes.reduce((s, qz) => s + (qz.questions?.length || 0), 0);
+      const titles = quizzes.slice(0, 5).map(qz => `• ${qz.title} (${qz.questions.length} câu)`).join('\n');
+      $('#importerReport').textContent =
+        `✅ Tạo được ${quizzes.length} bộ / ${totalQ} câu.\n${titles}${quizzes.length>5 ? '\n• ...' : ''}\n\n` +
+        `Bạn có thể "Tải JSON" hoặc nạp thẳng vào app để làm bài.`;
+
+      if ($('#autoLoadAfterParse').checked) {
+        handleData(quizzes);
+        closeTextbookImporter();
+        $('#statusMessage').innerHTML =
+          `Đã tạo từ giáo trình: <b>${sanitizeHTML(quizzes[0]?.title || 'Bộ câu hỏi')}</b>. Bấm Bắt đầu ngay!`;
+      }
+    }
+
+    function downloadGeneratedJSON() {
+      if (!__generatedQuizzes) return;
+      const blob = new Blob([JSON.stringify(__generatedQuizzes, null, 2)], { type: 'application/json;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'generated-quiz.json';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 500);
+    }
+
+    // ===== SEARCH INDEX (pre-strip 1 lần khi nạp JSON) =====
+let searchIndex = []; 
+// searchIndex[qz] = { titleN: "...", q: [ { textN:"", choicesN:[...], expN:"" } ] }
+
+function buildSearchIndex(quizzes) {
+  searchIndex = quizzes.map(qz => ({
+    titleN: strip(qz.title || ''),
+    q: (qz.questions || []).map(qq => ({
+      textN: strip(qq.text || ''),
+      choicesN: (qq.choices || []).map(c => strip(c || '')),
+      expN: strip(qq.explanation || '')
+    }))
+  }));
+}
+function questionMatches(qzIndex, i) {
+  const k = searchKeywordN; // ✅ đã strip sẵn
+  if (!k) return true;
+
+  const qi = searchIndex[qzIndex]?.q?.[i];
+  if (!qi) return true;
+
+  return (
+    qi.textN.includes(k) ||
+    qi.expN.includes(k) ||
+    qi.choicesN.some(x => x.includes(k))
+  );
+}
+
+    // ===== MATHJAX OPTIMIZED RENDER (WAIT STARTUP) =====
+let mathRenderTimer = null;
+let mathTypesetChain = Promise.resolve(); // khóa hàng đợi typeset
+
+function toMathTargets(target) {
+  if (!target) return [];
+  return Array.isArray(target) ? target.filter(Boolean) : [target];
+}
+
+function whenMathJaxReady() {
+  if (!window.MathJax) return Promise.resolve();
+  if (MathJax.startup && MathJax.startup.promise) return MathJax.startup.promise;
+  return Promise.resolve();
+}
+
+function renderMath(target) {
+  if (!window.MathJax) return;
+  const els = toMathTargets(target);
+  if (!els.length) return;
+
+  mathTypesetChain = mathTypesetChain
+    .then(() => whenMathJaxReady())
+    .then(() => MathJax.typesetPromise(els))
+    .catch(() => {});
+}
+
+function renderMathDebounced(target, delay = 50) {
+  if (!window.MathJax) return;
+  const els = toMathTargets(target);
+  if (!els.length) return;
+
+  clearTimeout(mathRenderTimer);
+  mathRenderTimer = setTimeout(() => {
+    // serialize để không typeset chồng lên nhau
+    mathTypesetChain = mathTypesetChain
+      .then(() => whenMathJaxReady())
+      .then(() => MathJax.typesetPromise(els))
+      .catch(() => {});
+  }, delay);
+}
+function typesetAndThen(targets, done) {
+  if (!window.MathJax) { done?.(); return; }
+  const els = toMathTargets(targets);
+  if (!els.length) { done?.(); return; }
+
+  mathTypesetChain = mathTypesetChain
+    .then(() => whenMathJaxReady())
+    .then(() => MathJax.typesetPromise(els))
+    .catch(() => {})
+    .finally(() => done?.());
+}
+
+const API_BASE = "https://quizct11.onrender.com";
+
+// ---- AI Explain cache & prefetch ----
+const aiExplainCache = new Map();   // key -> { html, raw, ts }
+const aiExplainInflight = new Map();// key -> Promise
+
+function aiCacheKey(q, userAns) {
+  const qid = (q && (q._id ?? q.id ?? q.qid ?? '')) + '';
+  const ua = Array.isArray(userAns) ? userAns.slice().sort((a,b)=>a-b).join(',') : String(userAns ?? '');
+  return `${qid}|${ua}`;
+}
+
+function normalizeUserAnswerForAI(userAns) {
+  if (Array.isArray(userAns)) return userAns.slice().sort((a,b)=>a-b);
+  return (userAns ?? null);
+}
+
+function fetchWithTimeout(url, opts = {}, timeoutMs = 12000) {
+  const ctrl = new AbortController();
+  const t = setTimeout(() => ctrl.abort(), timeoutMs);
+  return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(t));
+}
+
+// Attempt to stream text if server supports it; fallback to JSON
+async function fetchAIExplain({ q, userAnsIndex, correctAnsIndex, onChunk, timeoutMs = 12000 }) {
+  const payload = {
+    question: q.text,
+    choices: q.choices,
+    userAnswerIndex: normalizeUserAnswerForAI(userAnsIndex),
+    correctAnswerIndex: correctAnsIndex,
+    teacherExplanation: q.explanation || '' 
+  };
+
+  const res = await fetchWithTimeout(`${API_BASE}/api/explain`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      // Hint streaming if backend supports it (safe even if ignored)
+      'Accept': 'text/plain, text/event-stream, application/json'
+    },
+    body: JSON.stringify(payload)
+  }, timeoutMs);
+
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+
+  const ct = (res.headers.get('content-type') || '').toLowerCase();
+
+  // If JSON => standard response
+  if (ct.includes('application/json')) {
+    const data = await res.json();
+    return String(data.explanation || '');
+  }
+
+  // Otherwise, treat as stream/text
+  if (!res.body || !onChunk) {
+    const t = await res.text();
+    return String(t || '');
+  }
+
+  const reader = res.body.getReader();
+  const decoder = new TextDecoder('utf-8');
+  let full = '';
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    const chunk = decoder.decode(value, { stream: true });
+    full += chunk;
+    onChunk(chunk, full);
+  }
+  return full;
+}
+
+function renderAIBox(htmlOrText, { streaming = false } = {}) {
+  const box = $('#explain');
+  if (streaming) {
+    // streaming: update progressively, do NOT typeset every chunk too aggressively
+    box.innerHTML = `<b>AI giải thích:</b><br>${sanitizeHTML(htmlOrText)}`;
+  } else {
+    box.innerHTML = `<b>AI giải thích:</b><br>${sanitizeHTML(htmlOrText)}`;
+    renderMathDebounced(box, 60);
+  }
+}
+
+async function getAIExplainCached(q, userAnsIndex, correctAnsIndex, { streamToBox = false } = {}) {
+  const key = aiCacheKey(q, userAnsIndex);
+
+  if (aiExplainCache.has(key)) {
+    return aiExplainCache.get(key).raw;
+  }
+  if (aiExplainInflight.has(key)) {
+    return aiExplainInflight.get(key);
+  }
+
+  const p = (async () => {
+    const raw = await fetchAIExplain({
+      q,
+      userAnsIndex,
+      correctAnsIndex,
+      onChunk: streamToBox ? (chunk, full) => {
+        renderAIBox(full, { streaming: true });
+      } : null
+    });
+    aiExplainCache.set(key, { raw, ts: Date.now() });
+    return raw;
+  })().finally(() => {
+    aiExplainInflight.delete(key);
+  });
+
+  aiExplainInflight.set(key, p);
+  return p;
+}
+
+// Prefetch (silent)
+function prefetchAIExplain(q, userAnsIndex) {
+  if (!q || !quiz) return;
+  const correctAnsIndex = q.answer;
+  // Don't stream during prefetch
+  getAIExplainCached(q, userAnsIndex, correctAnsIndex, { streamToBox: false }).catch(() => {});
+}
+
+$('#btnAIExplain').onclick = async () => {
+  const btn = $('#btnAIExplain');
+  if (!quiz) return;
+
+  const q = quiz.questions[idx];
+  const userAnsIndex = answers[idx]?.value ?? null;
+  const correctAnsIndex = q.answer;
+
+  // immediate cache hit => instant UI
+  const key = aiCacheKey(q, userAnsIndex);
+  if (aiExplainCache.has(key)) {
+    renderAIBox(aiExplainCache.get(key).raw, { streaming: false });
+    return;
+  }
+
+  const old = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = 'Đang hỏi AI...';
+  $('#explain').textContent = '⏳ Đang tải giải thích...';
+
+  try {
+    // Streaming UI if backend supports streaming; else fallback to JSON
+    const raw = await getAIExplainCached(q, userAnsIndex, correctAnsIndex, { streamToBox: true });
+    // final render + MathJax (mượt hơn)
+    renderAIBox(raw, { streaming: false });
+  } catch (e) {
+    $('#explain').textContent = '❌ Lỗi khi gọi AI: ' + (e?.message || e);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = old;
+  }
+};
+    let allQuizzes = [], quiz = null, idx = 0, answers = [], timerId = null, wrongStreak = 0;
+let questionFilter = 'all'; // all | bookmark | wrong
+let autoNextTimer = null;
+let lastWrongKey = "";
+let sheepOpen = false;
+
+const EXAM_TITLE_PREFIX = "📝 Đề thi ngẫu nhiên";
+
+function clampInt(n, min, max) {
+  n = Number(n);
+  if (!Number.isFinite(n)) n = min;
+  return Math.max(min, Math.min(max, Math.round(n)));
+}
+
+function shuffleInPlace(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = (Math.random() * (i + 1)) | 0;
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function pickRandom(arr, k) {
+  const copy = arr.slice();
+  shuffleInPlace(copy);
+  return copy.slice(0, Math.max(0, Math.min(k, copy.length)));
+}
+
+/**
+ * Tạo quiz mới từ 3 chương (allQuizzes[0..2]) theo % và tổng câu.
+ * Không đụng vào dữ liệu gốc.
+ */
+function createExamQuiz({ total = 60, percents = [10,45,45] } = {}) {
+  if (!Array.isArray(allQuizzes) || allQuizzes.length < 1) {
+    throw new Error("Chưa có dữ liệu quiz.");
+  }
+
+  // Mặc định lấy 3 chương đầu nếu có
+  const chapters = [0,1,2].filter(i => allQuizzes[i] && Array.isArray(allQuizzes[i].questions));
+  if (chapters.length === 0) throw new Error("Không tìm thấy chapters/questions trong data.json.");
+
+  total = clampInt(total, 1, 5000);
+
+  // Chuẩn hoá % theo số chương thực có
+  const p = percents.slice(0, chapters.length).map(x => Math.max(0, Number(x) || 0));
+  let sumP = p.reduce((a,b)=>a+b,0);
+  if (sumP <= 0) {
+    // nếu user nhập toàn 0 -> chia đều
+    for (let i=0;i<p.length;i++) p[i] = 100 / p.length;
+    sumP = 100;
+  }
+
+  // target count theo %
+  const target = p.map(pi => Math.floor((pi / sumP) * total));
+  // bù phần dư để đủ total
+  let used = target.reduce((a,b)=>a+b,0);
+  let remain = total - used;
+
+  // danh sách số câu còn có thể lấy ở từng chương
+  const cap = chapters.map((ci, idxLocal) => (allQuizzes[ci].questions || []).length);
+
+  // bù remain vào chương còn "dư" nhiều
+  while (remain > 0) {
+    let best = -1;
+    let bestSlack = -1;
+    for (let i=0;i<target.length;i++) {
+      const slack = cap[i] - target[i];
+      if (slack > bestSlack) { bestSlack = slack; best = i; }
+    }
+    if (best === -1 || bestSlack <= 0) break; // không còn đủ câu để bù
+    target[best]++;
+    remain--;
+  }
+
+  // Lấy câu
+  let picked = [];
+  for (let i=0;i<chapters.length;i++) {
+    const ci = chapters[i];
+    const qs = allQuizzes[ci].questions || [];
+    const k = Math.min(target[i], qs.length);
+    picked = picked.concat(pickRandom(qs, k));
+  }
+
+  // Nếu vẫn thiếu (do chương không đủ), top-up từ tất cả chương
+  if (picked.length < total) {
+    const pool = chapters.flatMap(ci => allQuizzes[ci].questions || []);
+    // loại trùng bằng _id/text (nhẹ nhàng)
+    const key = (q)=> (q._id ?? "") + "|" + (q.text ?? "");
+    const seen = new Set(picked.map(key));
+    const rest = pool.filter(q => !seen.has(key(q)));
+    picked = picked.concat(pickRandom(rest, total - picked.length));
+  }
+
+  // Shuffle toàn đề để trộn chương
+  shuffleInPlace(picked);
+
+  // tạo quiz mới
+  const title = `${EXAM_TITLE_PREFIX} (${picked.length} câu)`;
+  return {
+    title,
+    timeLimit: 0, // bạn có thể set theo ý
+    questions: picked.map((q, i) => ({
+      ...q,
+      _id: q._id ?? i
+    }))
+  };
+}
+
+function upsertExamIntoAllQuizzes(examQuiz) {
+  // Nếu đã có "Đề thi ngẫu nhiên" thì replace, không nhân bản
+  const idxExist = allQuizzes.findIndex(q => (q?.title || "").startsWith(EXAM_TITLE_PREFIX));
+  if (idxExist >= 0) allQuizzes[idxExist] = examQuiz;
+  else allQuizzes.unshift(examQuiz); // đẩy lên đầu cho dễ chọn
+
+  // rebuild search index + dropdown
+  buildSearchIndex(allQuizzes);
+
+  $('#quizSelectGroup').style.display = 'grid';
+  $('#quizSelect').innerHTML = allQuizzes
+    .map((q, i) => `<option value="${i}">${q.title || ('Đề '+(i+1))}</option>`)
+    .join('');
+}
+    const STORAGE_KEY = "shimechamhoc_progress_v1";
+    let currentTimeLeft = 0;
+    function handleData(data) {
+      allQuizzes = Array.isArray(data) ? data : [data];
+      buildSearchIndex(allQuizzes);
+      if (allQuizzes.length > 1) {
+        $('#quizSelectGroup').style.display = 'grid';
+        $('#quizSelect').innerHTML = allQuizzes.map((q, i) => `<option value="${i}">${q.title || 'Đề '+(i+1)}</option>`).join('');
+      }
+      setupQuiz(0);
+    }
+    function setupQuiz(index) {
+      currentQuizIndex = Number(index) || 0;
+  quiz = (window.structuredClone
+    ? structuredClone(allQuizzes[index])
+    : JSON.parse(JSON.stringify(allQuizzes[index]))
+  );
+  quiz.questions.forEach((q, i) => {
+    if (q._id == null) q._id = i;
+  });
+  $('#timeLimit').value = Math.round((quiz.timeLimit||0)/60);
+  $('#statusMessage').innerHTML =
+  `Đã nạp: <b>${sanitizeHTML(quiz.title || '')}</b>. Bấm Bắt đầu ngay!`;
+}
+    $('#quizSelect').onchange = (e) => setupQuiz(e.target.value);
+
+    window.addEventListener('DOMContentLoaded', () => {
+  fetch('data.json')
+    .then(r => r.json())
+    .then(data => {
+      handleData(data);
+
+      const saved = loadProgress();
+      if (saved && confirm("🔄 Phát hiện bài làm chưa hoàn thành. Tiếp tục không?")) {
+        quiz = saved.quiz;
+        idx = saved.idx;
+        answers = saved.answers;
+        if (!Array.isArray(answers) || answers.length !== quiz.questions.length) {
+  answers = quiz.questions.map(() => ({ value: null }));
+}
+
+        currentTimeLeft = saved.timeLeft;
+
+        $('#instant').checked = saved.settings.instant;
+        $('#autoNext').checked = saved.settings.autoNext;
+        $('#shuffle').checked = saved.settings.shuffle;
+
+        $('#screenIntro').style.display='none';
+        $('#screenQuiz').style.display='block';
+        mapBuilt = false;
+        qCells = [];
+        currentCellIndex = -1;
+        buildQuestionMapOnce();
+        renderQuestion();
+
+        if (currentTimeLeft > 0) {
+          if (timerId) clearInterval(timerId);
+
+          timerId = setInterval(() => {
+            currentTimeLeft--;
+            saveProgressDebounced();
+
+            let m = Math.floor(currentTimeLeft / 60);
+            let s = (currentTimeLeft % 60).toString().padStart(2,'0');
+            $('#timer').textContent = `${m}:${s}`;
+
+            if(currentTimeLeft <= 0) {
+              clearInterval(timerId);
+              $('#btnSubmit').click();
+            }
+          }, 1000);
+        } else {
+          $('#timer').textContent = '∞';
+        }
+      } else {
+        localStorage.removeItem(STORAGE_KEY);
+      }
+    })
+    .catch(() => $('#statusMessage').textContent = "Hãy nạp file JSON.");
+});
+
+    $('#fileInput').onchange = (e) => {
+      const r = new FileReader();
+      r.onload = () => { try { handleData(JSON.parse(r.result)); } catch(err) { alert('File không hợp lệ!'); } };
+      r.readAsText(e.target.files[0]);
+    };
+    function saveProgress() {
+  if (!quiz || !answers.length) return;
+
+  const data = {
+    quiz,
+    idx,
+    answers,
+    timeLeft: currentTimeLeft,
+    settings: {
+      instant: $('#instant').checked,
+      autoNext: $('#autoNext').checked,
+      shuffle: $('#shuffle').checked
+    }
+  };
+
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+// Giảm spam localStorage: gom nhiều lần gọi saveProgress trong thời gian ngắn
+const saveProgressDebounced = (() => {
+  let t = null;
+  return () => {
+    clearTimeout(t);
+    t = setTimeout(() => {
+      try { saveProgress(); } catch(e) {}
+    }, 600);
+  };
+})();
+function loadProgress() {
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (!raw) return null;
+
+  try {
+    return JSON.parse(raw);
+  } catch {
+    localStorage.removeItem(STORAGE_KEY);
+    return null;
+  }
+}
+function buildQuestionMapOnce() {
+  const grid = $('#questionGrid');
+  if (!grid || mapBuilt || !quiz) return;
+
+  grid.innerHTML = '';
+  qCells = new Array(quiz.questions.length);
+
+  quiz.questions.forEach((q, i) => {
+    const cell = document.createElement('div');
+    cell.className = 'qcell';
+    cell.textContent = i + 1;
+    cell.dataset.i = i;
+
+    cell.onclick = () => {
+      idx = i;
+      renderQuestion();
+      saveProgressDebounced();
+    };
+
+    grid.appendChild(cell);
+    qCells[i] = cell;
+  });
+
+  mapBuilt = true;
+
+  // cập nhật trạng thái ban đầu 1 lần
+  updateAllCells();
+  updateCurrentCell();
+  applyQuestionFilter(); // nếu bạn đang ở filter nào đó
+}
+
+function updateCell(i) {
+  const cell = qCells[i];
+  if (!cell) return;
+
+  const q = quiz.questions[i];
+  const ans = answers[i]?.value ?? null;
+
+  cell.classList.remove('done', 'correct', 'wrong', 'bookmark', 'current');
+
+  if (ans !== null) cell.classList.add('done');
+  if (q.bookmarked) cell.classList.add('bookmark');
+
+  const canShowResult = $('#instant').checked || isSubmitted;
+  if (canShowResult && ans !== null) {
+    if (isAnswerCorrect(q, ans)) cell.classList.add('correct');
+    else cell.classList.add('wrong');
+  }
+}
+
+function updateAllCells() {
+  for (let i = 0; i < qCells.length; i++) updateCell(i);
+}
+
+function updateCurrentCell() {
+  // bỏ current cũ
+  if (currentCellIndex >= 0 && qCells[currentCellIndex]) {
+    qCells[currentCellIndex].classList.remove('current');
+  }
+  // set current mới
+  currentCellIndex = idx;
+  if (qCells[currentCellIndex]) qCells[currentCellIndex].classList.add('current');
+}
+
+// Filter chỉ scan 1 lần khi bấm filter, KHÔNG scan mỗi lần click đáp án
+function applyQuestionFilter() {
+  if (!mapBuilt) return;
+
+  for (let i = 0; i < quiz.questions.length; i++) {
+    const q = quiz.questions[i];
+    const ans = answers[i]?.value ?? null;
+
+    let show = true;
+
+    if (questionFilter === 'bookmark') {
+      show = !!q.bookmarked;
+    } else if (questionFilter === 'wrong') {
+      const canShowWrong = $('#instant').checked || isSubmitted;
+      show = (ans !== null) && canShowWrong && (ans !== q.answer);
+    }
+    if (show && searchKeywordN) {
+  show = questionMatches(currentQuizIndex, i);
+}
+    qCells[i].style.display = show ? '' : 'none';
+  }
+}
+
+// ---- Answer helpers (single & multi) ----
+function asArrayAnswer(ans) {
+  if (Array.isArray(ans)) return ans.slice().map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
+  if (typeof ans === 'number' && Number.isFinite(ans)) return [ans];
+  return [];
+}
+function asArrayUserAns(v) {
+  if (Array.isArray(v)) return v.slice().map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
+  if (typeof v === 'number' && Number.isFinite(v)) return [v];
+    return [];
+}
+function isAnswerCorrect(q, userVal) {
+  const a = asArrayAnswer(q.answer);
+  const u = asArrayUserAns(userVal);
+  if (!a.length) return false;
+  if (a.length !== u.length) return false;
+  for (let i=0;i<a.length;i++) if (a[i] !== u[i]) return false;
+  return true;
+}
+function isChoiceCorrect(q, choiceIndex) {
+  return asArrayAnswer(q.answer).includes(choiceIndex);
+}
+// ===== UPDATE UI CHO CHOICES (KHÔNG RERENDER) =====
+function applyChoiceUI() {
+  const q = quiz.questions[idx];
+  const selected = answers[idx]?.value ?? null;
+
+  const selectedArr = asArrayUserAns(selected);
+  const nodes = Array.from($('#qChoices').children);
+
+  nodes.forEach((node, i) => {
+    node.classList.remove('active', 'correct', 'wrong');
+
+    // update input checked (radio/checkbox)
+    const input = node.querySelector('input');
+    if (input) input.checked = selectedArr.includes(i);
+
+    // active styling
+    if (selectedArr.includes(i)) node.classList.add('active');
+
+    // instant grading
+    const canShowResult = $('#instant').checked || isSubmitted;
+    if (selectedArr.length && canShowResult) {
+      if (isChoiceCorrect(q, i)) {
+        node.classList.add('correct');
+      } else if (selectedArr.includes(i)) {
+        node.classList.add('wrong');
+      }
+    }
+  });
+}
+function selectChoice(choiceIndex) {
+  const q = quiz.questions[idx];
+  if (!answers[idx]) answers[idx] = { value: null };
+
+  const isMulti = Array.isArray(q.answer);
+
+  if (!isMulti) {
+    answers[idx].value = choiceIndex;
+  } else {
+    const cur = asArrayUserAns(answers[idx].value);
+    const pos = cur.indexOf(choiceIndex);
+    if (pos >= 0) cur.splice(pos, 1);
+    else cur.push(choiceIndex);
+    cur.sort((a,b)=>a-b);
+    answers[idx].value = cur.length ? cur : null;
+  }
+
+  applyChoiceUI();
+
+  // update map cell + save
+  if (mapBuilt) {
+    updateCell(idx);
+    applyQuestionFilter();
+  }
+
+  saveProgressDebounced();
+
+  // Prefetch AI silently (especially useful in instant-mode / wrong answers)
+  try {
+    const userVal = answers[idx].value;
+    const instant = $('#instant').checked;
+    if (instant) {
+      // prioritize prefetch when user seems wrong
+      if (!isAnswerCorrect(q, userVal)) prefetchAIExplain(q, userVal);
+    } else {
+      // light prefetch anyway
+      prefetchAIExplain(q, userVal);
+    }
+  } catch {}
+
+  // instant explanation text (local)
+  const canShowResult = $('#instant').checked || isSubmitted;
+  if (canShowResult && answers[idx].value !== null) {
+    if (q.explanation) {
+      $('#explain').textContent = "Giải thích: " + q.explanation;
+      renderMathDebounced($('#explain'), 50);
+    }
+  }
+
+  // auto next (only for single-choice, otherwise user needs multi picks)
+  if (!isMulti && $('#autoNext').checked && idx < quiz.questions.length - 1) {
+    clearTimeout(autoNextTimer);
+    const extra = 500;
+    const delay = ($('#instant').checked ? 800 : 250) + extra;
+    autoNextTimer = setTimeout(() => {
+      idx++;
+      renderQuestion();
+      saveProgressDebounced();
+    }, delay);
+  }
+    // ===== SHEEP POPUP: sai 3 câu liên tiếp =====
+  try {
+    const instant = $('#instant').checked;
+    const userVal = answers[idx].value;
+
+    if (instant && userVal !== null) {
+      const isWrong = !isAnswerCorrect(q, userVal);
+      const key = `${idx}|${Array.isArray(userVal) ? userVal.join(',') : userVal}`;
+
+      if (isWrong) {
+        // chỉ tính 1 lần cho mỗi lựa chọn ở mỗi câu
+        if (key !== lastWrongKey) {
+          wrongStreak++;
+          lastWrongKey = key;
+        }
+
+        if (wrongStreak >= 3 && !sheepOpen) {
+          sheepOpen = true;
+          $('#sheepPopup').style.display = 'flex';
+        }
+      } else {
+        // trả lời đúng → reset
+        wrongStreak = 0;
+        lastWrongKey = "";
+      }
+    }
+  } catch {}
+
+}
+    function renderQuestion() {
+  const quizScreen = $('#screenQuiz');
+  quizScreen.classList.add('is-switching');
+  const q = quiz.questions[idx];
+  if (!answers[idx]) answers[idx] = { value: null };
+  if (q.bookmarked === undefined) q.bookmarked = false;
+
+  $('#qIndex').textContent = `Câu ${idx+1}/${quiz.questions.length}`;
+
+  const qTextEl = $('#qText');
+  qTextEl.innerHTML = sanitizeHTML(q.text);
+
+  const box = $('#qChoices');
+  box.innerHTML = '';
+  $('#explain').textContent = '';
+
+  const isMulti = Array.isArray(q.answer);
+  const inputType = isMulti ? 'checkbox' : 'radio';
+  const inputName = 'opt';
+
+  q.choices.forEach((c, i) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'choice';
+    wrap.dataset.choice = String(i);
+    wrap.innerHTML = `
+      <input type="${inputType}" name="${inputName}" style="margin-right:10px">
+      <label style="cursor:pointer">${sanitizeHTML(c)}</label>
+    `;
+    box.appendChild(wrap);
+  });
+
+  // Event delegation: 1 listener
+  applyChoiceUI();
+
+  typesetAndThen([qTextEl, box], () => {
+    quizScreen.classList.remove('is-switching');
+  });
+
+  $('#btnPrev').disabled = (idx === 0);
+  $('#btnNext').style.visibility = (idx === quiz.questions.length - 1) ? 'hidden' : 'visible';
+
+  // bookmark icon  
+  buildQuestionMapOnce();
+  updateCell(idx);
+  updateCurrentCell();
+  applyQuestionFilter();
+
+  // ===== BOOKMARK UI =====
+  const bm = $('#bookmarkBtn');
+  bm.classList.toggle('active', q.bookmarked);
+  bm.textContent = q.bookmarked ? '⭐' : '☆';
+
+  bm.onclick = () => {
+    q.bookmarked = !q.bookmarked;
+    bm.classList.toggle('active', q.bookmarked);
+    bm.textContent = q.bookmarked ? '⭐' : '☆';
+    saveProgressDebounced();
+    if (mapBuilt) {
+      updateCell(idx);
+      applyQuestionFilter();
+    }
+  };
+}
+
+    $('#btnNext').onclick = () => {
+  if(idx < quiz.questions.length - 1) {
+    idx++;
+    renderQuestion();
+    saveProgressDebounced();
+  }
+};
+
+$('#btnPrev').onclick = () => {
+  if(idx > 0) {
+    idx--;
+    renderQuestion();
+    saveProgressDebounced();
+  }
+};
+
+
+    $('#btnStart').onclick = () => {
+  if(!quiz) return;
+  if($('#shuffle').checked) shuffleInPlace(quiz.questions);
+  answers = quiz.questions.map(() => ({value: null}));
+  idx = 0;
+
+  mapBuilt = false;
+  qCells = [];
+  currentCellIndex = -1;
+
+  $('#screenIntro').style.display='none';
+  $('#screenQuiz').style.display='block';
+
+  buildQuestionMapOnce();
+  renderQuestion();
+  startTimer();
+};
+
+    function launchFireworks() {
+  const canvas = document.getElementById("fireworks");
+  const ctx = canvas.getContext("2d");
+
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  let particles = [];
+
+  function boom(x) {
+    for (let i = 0; i < 80; i++) {
+      particles.push({
+        x,
+        y: canvas.height * 0.5,
+        vx: Math.cos(Math.random() * Math.PI * 2) * (3 + Math.random() * 4),
+        vy: Math.sin(Math.random() * Math.PI * 2) * (3 + Math.random() * 4),
+        life: 60,
+        color: `hsl(${Math.random() * 360},100%,60%)`
+      });
+    }
+  }
+
+  boom(canvas.width * 0.2);
+  boom(canvas.width * 0.8);
+
+  function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach((p, i) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.05;
+      p.life--;
+
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+      ctx.fill();
+
+      if (p.life <= 0) particles.splice(i, 1);
+    });
+
+    if (particles.length) requestAnimationFrame(animate);
+  }
+
+  animate();
+
+  const text = document.getElementById("congratsText");
+  text.classList.add("show");
+  setTimeout(() => text.classList.remove("show"), 4000);
+}
+    $('#btnSubmit').onclick = () => {
+       if(!confirm("Bạn muốn nộp bài?")) return;
+      isSubmitted = true;
+      if (mapBuilt) {
+      updateAllCells();
+      applyQuestionFilter();
+      }
+      localStorage.removeItem(STORAGE_KEY);
+      clearInterval(timerId);
+      
+      let totalCorrect = 0;
+      quiz.questions.forEach((q, i) => {
+        const userVal = answers[i]?.value ?? null;
+        if (userVal !== null && isAnswerCorrect(q, userVal)) totalCorrect++;
+      });
+const total = quiz.questions.length;
+      const percent = Math.round((totalCorrect / total) * 100);
+      $('#scoreLine').textContent = `Kết quả: ${totalCorrect}/${total} câu đúng (${percent}%)`;
+      $('#scoreBar').style.width = percent + '%';
+      $('#screenQuiz').style.display='none'; 
+      $('#screenResult').style.display='block';
+      $('#resultOverlay').classList.add('show');
+      $('#congratsText').classList.add('show');
+      setTimeout(() => {
+      $('#resultOverlay').classList.remove('show');
+      $('#congratsText').classList.remove('show');
+}, 2500);
+
+      
+      generateReview();
+      launchFireworks();
+
+    };
+
+    function generateReview() {
+  const area = $('#reviewArea');
+  area.innerHTML = '<h3 style="margin-top:30px">Chi tiết bài làm:</h3>';
+
+  const fmt = (q, val) => {
+    const arr = asArrayUserAns(val);
+    if (!arr.length) return 'Chưa trả lời';
+    return arr.map(i => sanitizeHTML(q.choices[i] ?? `(${i})`)).join(' | ');
+  };
+  const fmtCorrect = (q) => {
+    const arr = asArrayAnswer(q.answer);
+    return arr.map(i => sanitizeHTML(q.choices[i] ?? `(${i})`)).join(' | ');
+  };
+
+  quiz.questions.forEach((q, i) => {
+    const userAns = answers[i]?.value ?? null;
+    const ok = isAnswerCorrect(q, userAns);
+
+    const card = document.createElement('div');
+    card.className = 'card pad';
+    card.style.marginBottom = '15px';
+    card.style.borderLeft = `5px solid ${ok ? 'var(--ok)' : 'var(--bad)'}`;
+
+    card.innerHTML = `
+      <div style="font-weight:800; margin-bottom:5px">
+        Câu ${i+1}: ${sanitizeHTML(q.text)}
+      </div>
+      <div style="color:${ok ? 'var(--ok)' : 'var(--bad)'}">
+        <div><b>Bạn chọn:</b> ${fmt(q, userAns)}</div>
+        <div><b>Đáp án đúng:</b> ${fmtCorrect(q)}</div>
+      </div>
+      ${q.explanation ? `<div class="muted" style="margin-top:5px; font-size:13px">${sanitizeHTML(q.explanation)}</div>` : ``}
+    `;
+    area.appendChild(card);
+  });
+
+  renderMathDebounced(area, 80);
+}
+    function startTimer(){
+  if (timerId) clearInterval(timerId);
+
+  currentTimeLeft = Number($('#timeLimit').value) * 60;
+  if(currentTimeLeft <= 0) {
+    $('#timer').textContent = '∞';
+    return;
+  }
+  timerId = setInterval(() => {
+    currentTimeLeft--;
+    saveProgressDebounced();
+    let m = Math.floor(currentTimeLeft / 60);
+    let s = (currentTimeLeft % 60).toString().padStart(2,'0');
+    $('#timer').textContent = `${m}:${s}`;
+    if(currentTimeLeft <= 0) {
+      clearInterval(timerId);
+      $('#btnSubmit').click();
+    }
+  }, 1000);
+}
+    // ===== THEME TOGGLE =====
+const themeBtn = document.getElementById('toggleTheme');
+
+function setTheme(theme) {
+  document.documentElement.setAttribute('data-theme', theme);
+  localStorage.setItem('theme', theme);
+}
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  setTheme(current === 'dark' ? 'light' : 'dark');
+}
+// Load theme khi mở trang
+const savedTheme = localStorage.getItem('theme') || 'dark';
+setTheme(savedTheme);
+// Click nút
+themeBtn.onclick = toggleTheme;
+$('#filterAll').onclick = () => {
+  questionFilter = 'all';
+  applyQuestionFilter();
+};
+$('#filterBookmark').onclick = () => {
+  questionFilter = 'bookmark';
+  applyQuestionFilter();
+};
+$('#filterWrong').onclick = () => {
+  questionFilter = 'wrong';
+  applyQuestionFilter();
+};
+$('#searchBox').oninput = (e) => {
+  searchKeywordN = strip(e.target.value); // keyword đã strip sẵn
+  applyQuestionFilter();
+};
+// ===== Button: Tạo đề thi =====
+$('#btnMakeExam').onclick = () => {
+  try {
+    const total = clampInt($('#examCount').value, 10, 2000);
+    const p1 = clampInt($('#p1').value, 0, 100);
+    const p2 = clampInt($('#p2').value, 0, 100);
+    const p3 = clampInt($('#p3').value, 0, 100);
+
+    const examQuiz = createExamQuiz({
+      total,
+      percents: [p1, p2, p3]
+    });
+
+    upsertExamIntoAllQuizzes(examQuiz);
+    // chuyển sang quiz đề thi vừa tạo
+    $('#quizSelect').value = 0;
+    setupQuiz(0);
+
+    $('#examInfo').textContent = `✅ Đã tạo: ${examQuiz.title}. Bấm "Bắt đầu" để làm.`;
+  } catch (e) {
+    $('#examInfo').textContent = '❌ ' + (e?.message || e);
+  }
+};
