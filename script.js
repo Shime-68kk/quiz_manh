@@ -932,7 +932,7 @@ function applyQuestionFilter() {
       show = !!q.bookmarked;
     } else if (questionFilter === 'wrong') {
       const canShowWrong = $('#instant').checked || isSubmitted;
-      show = (ans !== null) && canShowWrong && (ans !== q.answer);
+      show = (ans !== null) && canShowWrong && (!isAnswerCorrect(q, ans));
     }
     if (show && searchKeywordN) {
   show = questionMatches(currentQuizIndex, i);
@@ -950,9 +950,47 @@ function asArrayAnswer(ans) {
 function asArrayUserAns(v) {
   if (Array.isArray(v)) return v.slice().map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
   if (typeof v === 'number' && Number.isFinite(v)) return [v];
-    return [];
+  return [];
 }
+
+function isFillQuestion(q){
+  // mặc định: nếu không có choices => coi là câu điền đáp án
+  return q?.type === 'input' || q?.type === 'fill' || !Array.isArray(q?.choices);
+}
+
+function normFill(s){
+  return String(s ?? "")
+    .trim()
+    .replace(/\s+/g, " ")
+    .toLowerCase();
+}
+
+function toNumberMaybe(s){
+  const t = normFill(s).replace(",", "."); // 1,5 -> 1.5
+  if (!t) return NaN;
+  const n = Number(t);
+  return Number.isFinite(n) ? n : NaN;
+}
+
 function isAnswerCorrect(q, userVal) {
+  // ✅ CÂU ĐIỀN ĐÁP ÁN
+  if (isFillQuestion(q)) {
+    const correct = (q.answerText ?? q.answer ?? "").toString();
+    const u = normFill(userVal);
+    const c = normFill(correct);
+
+    if (!u || !c) return false;
+
+    // nếu cả 2 đều là số hợp lệ -> so sánh số
+    const un = toNumberMaybe(u);
+    const cn = toNumberMaybe(c);
+    if (Number.isFinite(un) && Number.isFinite(cn)) return Math.abs(un - cn) < 1e-9;
+
+    // còn lại so sánh text (đã chuẩn hoá)
+    return u === c;
+  }
+
+  // ✅ SINGLE / MULTI CHOICE (như cũ)
   const a = asArrayAnswer(q.answer);
   const u = asArrayUserAns(userVal);
   if (!a.length) return false;
@@ -960,12 +998,14 @@ function isAnswerCorrect(q, userVal) {
   for (let i=0;i<a.length;i++) if (a[i] !== u[i]) return false;
   return true;
 }
+
 function isChoiceCorrect(q, choiceIndex) {
   return asArrayAnswer(q.answer).includes(choiceIndex);
 }
 // ===== UPDATE UI CHO CHOICES (KHÔNG RERENDER) =====
 function applyChoiceUI() {
   const q = quiz.questions[idx];
+  if (isFillQuestion(q)) return;
   const selected = answers[idx]?.value ?? null;
 
   const selectedArr = asArrayUserAns(selected);
@@ -1081,69 +1121,142 @@ function selectChoice(choiceIndex) {
   } catch {}
 
 }
-    function renderQuestion() {
+   function renderQuestion() {
   const quizScreen = $('#screenQuiz');
   quizScreen.classList.add('is-switching');
-  const q = quiz.questions[idx];
-  if (!answers[idx]) answers[idx] = { value: null };
-  if (q.bookmarked === undefined) q.bookmarked = false;
 
-  $('#qIndex').textContent = `Câu ${idx+1}/${quiz.questions.length}`;
+  try {
+    const q = quiz.questions[idx];
+    if (!answers[idx]) answers[idx] = { value: null };
+    if (q.bookmarked === undefined) q.bookmarked = false;
 
-  const qTextEl = $('#qText');
-  qTextEl.innerHTML = sanitizeHTML(q.text);
+    $('#qIndex').textContent = `Câu ${idx+1}/${quiz.questions.length}`;
 
-  const box = $('#qChoices');
-  box.innerHTML = '';
-  $('#explain').textContent = '';
+    const qTextEl = $('#qText');
+    qTextEl.innerHTML = sanitizeHTML(q.text);
 
-  const isMulti = Array.isArray(q.answer);
-  const inputType = isMulti ? 'checkbox' : 'radio';
-  const inputName = 'opt';
+    const box = $('#qChoices');
+    box.innerHTML = '';
+    $('#explain').textContent = '';
 
-  q.choices.forEach((c, i) => {
-    const wrap = document.createElement('div');
-    wrap.className = 'choice';
-    wrap.dataset.choice = String(i);
-    wrap.innerHTML = `
-      <input type="${inputType}" name="${inputName}" style="margin-right:10px">
-      <label style="cursor:pointer">${sanitizeHTML(c)}</label>
-    `;
-    box.appendChild(wrap);
-  });
+    // ✅ NEW: nếu là câu điền đáp án (type=input hoặc không có choices)
+    if (isFillQuestion(q)) {
+      const cur = (answers[idx]?.value ?? '');
 
-  // Event delegation: 1 listener
-  applyChoiceUI();
+      box.innerHTML = `
+        <div class="choice" style="cursor:default">
+          <div style="width:100%">
+            <div class="muted" style="margin-bottom:8px">Điền đáp án:</div>
+            <input id="fillInput" type="text" placeholder="Nhập đáp án..."
+              style="width:100%;padding:12px;border-radius:12px;
+                     background:rgba(255,255,255,0.03);
+                     color:var(--text);
+                     border:1px solid var(--border);" />
+          </div>
+        </div>
+      `;
 
-  typesetAndThen([qTextEl, box], () => {
-    quizScreen.classList.remove('is-switching');
-  });
+      const inp = $('#fillInput');
+      inp.value = cur;
 
-  $('#btnPrev').disabled = (idx === 0);
-  $('#btnNext').style.visibility = (idx === quiz.questions.length - 1) ? 'hidden' : 'visible';
+      inp.oninput = () => {
+        answers[idx].value = inp.value.trim() ? inp.value : null;
+        saveProgressDebounced();
+        if (mapBuilt) {
+          updateCell(idx);
+          applyQuestionFilter();
+        }
+      };
 
-  // bookmark icon  
-  buildQuestionMapOnce();
-  updateCell(idx);
-  updateCurrentCell();
-  applyQuestionFilter();
+      // hiển thị đúng/sai (instant hoặc đã nộp)
+      const canShowResult = $('#instant').checked || isSubmitted;
+      if (canShowResult && String(inp.value || '').trim() !== '') {
+        const ok = isAnswerCorrect(q, inp.value);
+        box.firstElementChild.classList.toggle('correct', ok);
+        box.firstElementChild.classList.toggle('wrong', !ok);
+      }
 
-  // ===== BOOKMARK UI =====
-  const bm = $('#bookmarkBtn');
-  bm.classList.toggle('active', q.bookmarked);
-  bm.textContent = q.bookmarked ? '⭐' : '☆';
+      typesetAndThen([qTextEl, box], () => {
+        quizScreen.classList.remove('is-switching');
+      });
 
-  bm.onclick = () => {
-    q.bookmarked = !q.bookmarked;
+      $('#btnPrev').disabled = (idx === 0);
+      $('#btnNext').style.visibility = (idx === quiz.questions.length - 1) ? 'hidden' : 'visible';
+
+      buildQuestionMapOnce();
+      updateCell(idx);
+      updateCurrentCell();
+      applyQuestionFilter();
+
+      const bm = $('#bookmarkBtn');
+      bm.classList.toggle('active', q.bookmarked);
+      bm.textContent = q.bookmarked ? '⭐' : '☆';
+      bm.onclick = () => {
+        q.bookmarked = !q.bookmarked;
+        bm.classList.toggle('active', q.bookmarked);
+        bm.textContent = q.bookmarked ? '⭐' : '☆';
+        saveProgressDebounced();
+        if (mapBuilt) {
+          updateCell(idx);
+          applyQuestionFilter();
+        }
+      };
+
+      return;
+    }
+
+    // ✅ Câu trắc nghiệm (giữ logic cũ)
+    const isMulti = Array.isArray(q.answer);
+    const inputType = isMulti ? 'checkbox' : 'radio';
+    const inputName = 'opt';
+
+    q.choices.forEach((c, i) => {
+      const wrap = document.createElement('div');
+      wrap.className = 'choice';
+      wrap.dataset.choice = String(i);
+      wrap.innerHTML = `
+        <input type="${inputType}" name="${inputName}" style="margin-right:10px">
+        <label style="cursor:pointer">${sanitizeHTML(c)}</label>
+      `;
+      box.appendChild(wrap);
+    });
+
+    applyChoiceUI();
+
+    typesetAndThen([qTextEl, box], () => {
+      quizScreen.classList.remove('is-switching');
+    });
+
+    $('#btnPrev').disabled = (idx === 0);
+    $('#btnNext').style.visibility = (idx === quiz.questions.length - 1) ? 'hidden' : 'visible';
+
+    buildQuestionMapOnce();
+    updateCell(idx);
+    updateCurrentCell();
+    applyQuestionFilter();
+
+    const bm = $('#bookmarkBtn');
     bm.classList.toggle('active', q.bookmarked);
     bm.textContent = q.bookmarked ? '⭐' : '☆';
-    saveProgressDebounced();
-    if (mapBuilt) {
-      updateCell(idx);
-      applyQuestionFilter();
-    }
-  };
+
+    bm.onclick = () => {
+      q.bookmarked = !q.bookmarked;
+      bm.classList.toggle('active', q.bookmarked);
+      bm.textContent = q.bookmarked ? '⭐' : '☆';
+      saveProgressDebounced();
+      if (mapBuilt) {
+        updateCell(idx);
+        applyQuestionFilter();
+      }
+    };
+  } catch (e) {
+    console.error(e);
+    // ✅ tránh bị kẹt opacity 0
+    $('#screenQuiz').classList.remove('is-switching');
+    $('#statusMessage').textContent = '❌ Lỗi render câu hỏi: ' + (e?.message || e);
+  }
 }
+
 
     $('#btnNext').onclick = () => {
   if(idx < quiz.questions.length - 1) {
@@ -1268,15 +1381,25 @@ const total = quiz.questions.length;
   const area = $('#reviewArea');
   area.innerHTML = '<h3 style="margin-top:30px">Chi tiết bài làm:</h3>';
 
-  const fmt = (q, val) => {
+    const fmt = (q, val) => {
+    if (isFillQuestion(q)) {
+      const s = String(val ?? '').trim();
+      return s ? sanitizeHTML(s) : 'Chưa trả lời';
+    }
     const arr = asArrayUserAns(val);
     if (!arr.length) return 'Chưa trả lời';
     return arr.map(i => sanitizeHTML(q.choices[i] ?? `(${i})`)).join(' | ');
   };
+
   const fmtCorrect = (q) => {
+    if (isFillQuestion(q)) {
+      const s = String(q.answerText ?? q.answer ?? '').trim();
+      return s ? sanitizeHTML(s) : '(thiếu đáp án)';
+    }
     const arr = asArrayAnswer(q.answer);
     return arr.map(i => sanitizeHTML(q.choices[i] ?? `(${i})`)).join(' | ');
   };
+
 
   quiz.questions.forEach((q, i) => {
     const userAns = answers[i]?.value ?? null;
