@@ -184,7 +184,6 @@ D. ...
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i].trim();
     if (!line) continue;
-
     // chapter split
     const mCh = reChapter.exec(line);
     if (mCh && splitByChapter) {
@@ -194,8 +193,6 @@ D. ...
       curQuiz = newQuiz(`Chương ${chapNum}${chapName ? ': ' + chapName : ''}`);
       continue;
     }
-
-    // question start
     const mQ = reQStart.exec(line);
     if (mQ) {
       flushQuestion();
@@ -471,13 +468,6 @@ function normalizeUserAnswerForAI(userAns) {
   if (Array.isArray(userAns)) return userAns.slice().sort((a,b)=>a-b);
   return (userAns ?? null);
 }
-
-function fetchWithTimeout(url, opts = {}, timeoutMs = 12000) {
-  const ctrl = new AbortController();
-  const t = setTimeout(() => ctrl.abort(), timeoutMs);
-  return fetch(url, { ...opts, signal: ctrl.signal }).finally(() => clearTimeout(t));
-}
-
 // Attempt to stream text if server supports it; fallback to JSON
 async function fetchAIExplain({ q, userAnsIndex, correctAnsIndex, onChunk, timeoutMs = 12000 }) {
   const payload = {
@@ -1352,7 +1342,6 @@ $('#btnPrev').onclick = () => {
       }
       localStorage.removeItem(STORAGE_KEY);
       clearInterval(timerId);
-      
       let totalCorrect = 0;
       quiz.questions.forEach((q, i) => {
         const userVal = answers[i]?.value ?? null;
@@ -1362,8 +1351,13 @@ const total = quiz.questions.length;
       const percent = Math.round((totalCorrect / total) * 100);
       $('#scoreLine').textContent = `Kết quả: ${totalCorrect}/${total} câu đúng (${percent}%)`;
       $('#scoreBar').style.width = percent + '%';
-      $('#screenQuiz').style.display='none'; 
-      $('#screenResult').style.display='block';
+      $('#screenQuiz').style.display='none';
+$('#screenResult').style.display='block';
+requestAnimationFrame(() => {
+  window.scrollTo(0, 0);
+  document.documentElement.scrollTop = 0;
+  document.body.scrollTop = 0;
+});
       $('#resultOverlay').classList.add('show');
       $('#congratsText').classList.add('show');
       setTimeout(() => {
@@ -1377,11 +1371,23 @@ const total = quiz.questions.length;
 
     };
 
+    function previewText(s, max = 70) {
+  const t = String(s || '').replace(/\s+/g, ' ').trim();
+  if (!t) return '';
+  return t.length > max ? (t.slice(0, max - 1) + '…') : t;
+}
+
     function generateReview() {
   const area = $('#reviewArea');
-  area.innerHTML = '<h3 style="margin-top:30px">Chi tiết bài làm:</h3>';
+  area.innerHTML = `
+    <div class="muted" style="margin-top:6px">...</div>
+    <div class="muted" style="margin-top:6px">Bấm vào từng câu để xem chi tiết đúng/sai.</div>
+    <div id="reviewList" style="display:grid; gap:12px; margin-top:14px"></div>
+  `;
 
-    const fmt = (q, val) => {
+  const list = $('#reviewList');
+
+  const fmt = (q, val) => {
     if (isFillQuestion(q)) {
       const s = String(val ?? '').trim();
       return s ? sanitizeHTML(s) : 'Chưa trả lời';
@@ -1400,30 +1406,84 @@ const total = quiz.questions.length;
     return arr.map(i => sanitizeHTML(q.choices[i] ?? `(${i})`)).join(' | ');
   };
 
+  // helper: trạng thái
+  const getStatus = (q, userAns) => {
+    if (userAns == null || (Array.isArray(userAns) && userAns.length === 0)) return 'blank';
+    return isAnswerCorrect(q, userAns) ? 'correct' : 'wrong';
+  };
 
   quiz.questions.forEach((q, i) => {
     const userAns = answers[i]?.value ?? null;
-    const ok = isAnswerCorrect(q, userAns);
+    const status = getStatus(q, userAns);
 
-    const card = document.createElement('div');
-    card.className = 'card pad';
-    card.style.marginBottom = '15px';
-    card.style.borderLeft = `5px solid ${ok ? 'var(--ok)' : 'var(--bad)'}`;
+    const badge =
+      status === 'correct' ? '✅ Đúng' :
+      status === 'wrong' ? '❌ Sai' :
+      '⚪ Chưa làm';
 
-    card.innerHTML = `
-      <div style="font-weight:800; margin-bottom:5px">
-        Câu ${i+1}: ${sanitizeHTML(q.text)}
+    const borderColor =
+      status === 'correct' ? 'var(--ok)' :
+      status === 'wrong' ? 'var(--bad)' :
+      'var(--border)';
+
+    // item container
+    const item = document.createElement('div');
+    item.className = 'card pad reviewItem';
+    item.style.borderLeft = `5px solid ${borderColor}`;
+    item.style.cursor = 'pointer';
+
+    // header (luôn hiện)
+  item.innerHTML = `
+  <div class="reviewHead" style="display:flex; align-items:center; justify-content:space-between; gap:12px">
+    <div style="min-width:0">
+      <div style="font-weight:800">
+        Câu ${i + 1} <span class="muted" style="font-weight:600">(${badge})</span>
       </div>
-      <div style="color:${ok ? 'var(--ok)' : 'var(--bad)'}">
+
+      <div class="muted"
+           style="font-size:13px; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">
+        ${sanitizeHTML(previewText(q.text, 70))}
+      </div>
+    </div>
+
+    <div class="muted reviewChevron" style="font-size:18px; flex:0 0 auto">▸</div>
+  </div>
+
+  <div class="reviewDetail" style="display:none; margin-top:12px">
+    <div style="padding-top:10px; border-top:1px solid var(--border)">
+      <div style="font-weight:800; margin-bottom:6px">Nội dung:</div>
+      <div style="margin-bottom:10px">${sanitizeHTML(q.text)}</div>
+
+      <div style="color:${status==='correct' ? 'var(--ok)' : status==='wrong' ? 'var(--bad)' : 'var(--text)'}">
         <div><b>Bạn chọn:</b> ${fmt(q, userAns)}</div>
         <div><b>Đáp án đúng:</b> ${fmtCorrect(q)}</div>
       </div>
-      ${q.explanation ? `<div class="muted" style="margin-top:5px; font-size:13px">${sanitizeHTML(q.explanation)}</div>` : ``}
-    `;
-    area.appendChild(card);
+
+      ${q.explanation ? `
+        <div class="muted" style="margin-top:8px; font-size:13px">
+          ${sanitizeHTML(q.explanation)}
+        </div>` : ``}
+    </div>
+  </div>
+`;
+
+
+    // click-to-toggle
+    item.addEventListener('click', () => {
+      const detail = item.querySelector('.reviewDetail');
+      const chev = item.querySelector('.reviewChevron');
+      const isOpen = detail.style.display !== 'none';
+      detail.style.display = isOpen ? 'none' : 'block';
+      chev.textContent = isOpen ? '▸' : '▾';
+
+      // typeset MathJax chỉ khi mở (đúng yêu cầu tối ưu)
+      if (!isOpen) renderMathDebounced(detail, 80);
+    });
+
+    list.appendChild(item);
   });
 
-  renderMathDebounced(area, 80);
+  // Không typeset toàn bộ nữa. Chỉ typeset khi mở từng câu.
 }
     function startTimer(){
   if (timerId) clearInterval(timerId);
@@ -1474,7 +1534,7 @@ $('#filterWrong').onclick = () => {
   applyQuestionFilter();
 };
 $('#searchBox').oninput = (e) => {
-  searchKeywordN = strip(e.target.value); // keyword đã strip sẵn
+  searchKeywordN = strip(e.target.value);
   applyQuestionFilter();
 };
 // ===== Button: Tạo đề thi =====
