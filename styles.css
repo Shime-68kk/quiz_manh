@@ -337,3 +337,43 @@
   /* nút gọn hơn */
   .btn{ padding:10px 12px; border-radius:10px; font-size:14px; }
 }
+/* ===== FIX REVIEW TRÀN NGANG + KHỚP TOOLBAR ===== */
+
+/* Không cho tràn ngang toàn trang */
+html, body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+/* Screen kết quả & review */
+#screenResult,
+#reviewArea,
+#reviewList {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.reviewItem {
+  max-width: 100%;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.reviewHead {
+  min-width: 0;
+}
+.reviewHead > div {
+  min-width: 0;
+}
+.reviewHead .muted {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.reviewDetail,
+.reviewDetail * {
+  max-width: 100%;
+  box-sizing: border-box;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
