@@ -10,8 +10,6 @@
     function sanitizeHTML(input) {
       const html = String(input ?? "");
       const doc = new DOMParser().parseFromString(html, "text/html");
-
-      // Remove dangerous tags entirely
       doc.querySelectorAll(
         "script, style, iframe, object, embed, link, meta, base, form"
       ).forEach(el => el.remove());
@@ -117,7 +115,7 @@
       return doc.body.innerHTML;
     }
 
-    let searchKeywordN = ''; // ✅ keyword đã strip sẵn
+    let searchKeywordN = ''; 
     let currentQuizIndex = 0;
     let searchKeyword = '';
     let isSubmitted = false;
