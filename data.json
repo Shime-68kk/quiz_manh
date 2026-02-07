@@ -1,4 +1,105 @@
 [
+   {
+    "title": "Nhị thức Newton – Lý thuyết trọng tâm",
+    "shuffle": true,
+    "timeLimit": 0,
+    "questions": [
+      {
+        "text": "Khai triển nhị thức Newton $(a+b)^n$ ($n\\in\\mathbb{N}$) được cho bởi công thức nào?",
+        "choices": [
+          "$(a+b)^n=\\sum_{k=0}^{n} C_n^k a^{n-k}b^k$",
+          "$(a+b)^n=\\sum_{k=1}^{n} C_n^k a^{n-k}b^k$",
+          "$(a+b)^n=\\sum_{k=0}^{n} a^k b^{n-k}$",
+          "$(a+b)^n=a^n+b^n$"
+        ],
+        "answer": 0,
+        "explanation": "Đây là công thức chuẩn của nhị thức Newton."
+      },
+      {
+        "text": "Số hạng tổng quát trong khai triển $(a+b)^n$ là",
+        "choices": [
+          "$C_n^k a^{n-k}b^k$",
+          "$C_n^{k+1} a^{n-k}b^{k+1}$",
+          "$C_n^k a^{k}b^{k}$",
+          "$C_n^k a^{n}b^{k}$"
+        ],
+        "answer": 0,
+        "explanation": "Số hạng tổng quát ứng với $k$ là $C_n^k a^{n-k}b^k$."
+      },
+      {
+        "text": "Khai triển $(a+b)^n$ có bao nhiêu số hạng?",
+        "choices": ["$n$", "$n+1$", "$2n$", "$2^n$"],
+        "answer": 1,
+        "explanation": "Có $n+1$ số hạng ứng với $k=0,1,\\dots,n$."
+      },
+      {
+        "text": "Hệ số tổ hợp có tính chất đối xứng nào sau đây?",
+        "choices": [
+          "$C_n^k=C_k^n$",
+          "$C_n^k=C_n^{n-k}$",
+          "$C_n^k=C_{n-1}^{k}$",
+          "$C_n^k=C_{n-1}^{k-1}$"
+        ],
+        "answer": 1,
+        "explanation": "Tính chất đối xứng: $C_n^k=C_n^{n-k}$."
+      }
+    ]
+  },
+  {
+    "title": "Nhị thức Newton – Đúng / Sai (Lý thuyết chuẩn)",
+    "shuffle": true,
+    "timeLimit": 0,
+    "questions": [
+      {
+        "text": "Trong khai triển nhị thức $(a+b)^n$, số mũ của $a$ giảm dần từ $n$ đến $0$.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 0,
+        "explanation": "Số hạng tổng quát là $C_n^k a^{n-k}b^k$ nên khi $k$ tăng, số mũ của $a$ giảm."
+      },
+      {
+        "text": "Trong khai triển $(a-b)^n$, mọi số hạng đều mang dấu âm.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 1,
+        "explanation": "Dấu của số hạng phụ thuộc vào $(-b)^k$, nên các số hạng đan dấu."
+      },
+      {
+        "text": "Khai triển $(a+b)^n$ luôn có đúng $n+1$ số hạng.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 0,
+        "explanation": "Có $n+1$ giá trị của $k$ từ $0$ đến $n$."
+      },
+      {
+        "text": "Hệ số của số hạng chứa $x^k$ trong khai triển $(1+x)^n$ là $C_n^k$.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 0,
+        "explanation": "Đây là dạng chuẩn của nhị thức Newton."
+      },
+      {
+        "text": "Tổng các hệ số của khai triển $(a+b)^n$ bằng $n+1$.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 1,
+        "explanation": "Tổng các hệ số bằng $(1+1)^n=2^n$, không phải $n+1$."
+      },
+      {
+        "text": "Hệ số tổ hợp thỏa mãn $C_n^k=C_n^{n-k}$.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 0,
+        "explanation": "Đây là tính chất đối xứng của hệ số tổ hợp."
+      },
+      {
+        "text": "Số hạng thứ $k+1$ trong khai triển $(a+b)^n$ có hệ số là $C_n^{k+1}$.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 1,
+        "explanation": "Số hạng thứ $k+1$ ứng với hệ số $C_n^k$, không phải $C_n^{k+1}$."
+      },
+      {
+        "text": "Trong khai triển $(a+b)^n$, tổng các số mũ của $a$ và $b$ trong mỗi số hạng luôn bằng $n$.",
+        "choices": ["Đúng", "Sai"],
+        "answer": 0,
+        "explanation": "Mỗi số hạng có dạng $a^{n-k}b^k$ nên tổng số mũ bằng $n$."
+      }
+    ]
+  },
   {
     "title": "Nhị thức Newton – Lý thuyết & công thức",
     "shuffle": true,
