@@ -135,9 +135,11 @@
 
       <!-- Desktop actions -->
       <div class="headerActions desktopActions">
-        <button class="btn secondary" onclick="$('#fileInput').click()">Nạp JSON</button>
-        <button class="btn secondary" onclick="openTextbookImporter()">📄 Nạp giáo trình</button>
-        <button class="btn ghost" id="toggleTheme">🌙 / ☀️</button>
+        <button class="btn secondary" id="btnLoadJson" onclick="$('#fileInput').click()">Nạp JSON</button>
+<button class="btn secondary" id="btnLoadTextbook" onclick="openTextbookImporter()">📄 Nạp giáo trình</button>
+<button class="btn ghost" id="toggleTheme">🌙 / ☀️</button>
+<button class="btn ghost" id="btnHelp">❓ Hướng dẫn</button>
+
       </div>
 
       <!-- Mobile compact menu -->
@@ -147,6 +149,8 @@
           <button class="btn secondary" id="mLoadJson">Nạp JSON</button>
           <button class="btn secondary" id="mLoadTextbook">📄 Nạp giáo trình</button>
           <button class="btn ghost" id="mTheme">🌙 / ☀️</button>
+          <button class="btn ghost" id="mHelp">❓ Hướng dẫn</button>
+
         </div>
       </div>
     </div>
@@ -321,10 +325,37 @@
       </div>
     </div>
   </div>
+<!-- ===== WELCOME TOUR ===== -->
+<div id="tourWelcome" style="display:none">
+  <div class="box">
+    <h3>👋 Chào mừng đến với ShimeChamhoc</h3>
+    <p class="muted">Bạn có muốn được hướng dẫn cách sử dụng nhanh không?</p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:14px">
+      <button class="btn ok" id="tourYes">Có</button>
+      <button class="btn secondary" id="tourNo">Không cần</button>
+    </div>
+  </div>
+</div>
 
+<div id="tourOverlay" style="display:none">
+  <div id="tourSpotlight"></div>
+  <div id="tourTooltip">
+    <div id="tourText"></div>
+  <div class="actions">
+  <button class="btn secondary" id="tourPrev">←</button>
+  <button class="btn ok" id="tourNext">Tiếp →</button>
+  <button class="btn secondary" id="tourDim">Tối</button>
+  <button class="btn secondary" id="tourBright">Sáng</button>
+  <button class="btn warn" id="tourSkip">Bỏ qua</button>
+</div>
+
+  </div>
+</div>
   <script src="script.js"></script>
   <canvas id="fireworks"></canvas>
   <div id="congratsText">🎉 Chúc mừng bạn đã hoàn thành bài làm!</div>
   <div id="resultOverlay"></div>
+
+
 </body>
 </html>
