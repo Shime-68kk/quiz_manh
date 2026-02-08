@@ -7,6 +7,8 @@ const $$ = (sel)=>Array.from(document.querySelectorAll(sel));
   const mLoadJson = document.getElementById('mLoadJson');
   const mLoadTextbook = document.getElementById('mLoadTextbook');
   const mTheme = document.getElementById('mTheme');
+    const mHelp = document.getElementById('mHelp');
+
 
   if (!btnTools || !menu) return;
 
@@ -22,6 +24,8 @@ const $$ = (sel)=>Array.from(document.querySelectorAll(sel));
   mLoadJson?.addEventListener('click', () => { closeMenu(); $('#fileInput').click(); });
   mLoadTextbook?.addEventListener('click', () => { closeMenu(); openTextbookImporter(); });
   mTheme?.addEventListener('click', () => { closeMenu(); toggleTheme(); });
+    mHelp?.addEventListener('click', () => { closeMenu(); document.getElementById('btnHelp')?.click(); });
+
 
   // Click outside to close
   document.addEventListener('click', (e) => {
@@ -715,19 +719,38 @@ function upsertExamIntoAllQuizzes(examQuiz) {
   buildSearchIndex(allQuizzes);
 
   $('#quizSelectGroup').style.display = 'grid';
-  $('#quizSelect').innerHTML = allQuizzes
-    .map((q, i) => `<option value="${i}">${q.title || ('Đề '+(i+1))}</option>`)
-    .join('');
+renderQuizSelect();
+
 }
     const STORAGE_KEY = "shimechamhoc_progress_v1";
     let currentTimeLeft = 0;
+    function shortTitle(s, max = 50) {
+  s = String(s || '');
+  return s.length > max ? s.slice(0, max - 1) + '…' : s;
+}
+
+function renderQuizSelect() {
+  const sel = $('#quizSelect');
+  sel.innerHTML = '';
+
+  allQuizzes.forEach((q, i) => {
+    const full = q?.title || ('Đề ' + (i + 1));
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = shortTitle(full, 50); 
+    opt.title = full;
+    sel.appendChild(opt);
+  });
+}
+
     function handleData(data) {
       allQuizzes = Array.isArray(data) ? data : [data];
       buildSearchIndex(allQuizzes);
       if (allQuizzes.length > 1) {
-        $('#quizSelectGroup').style.display = 'grid';
-        $('#quizSelect').innerHTML = allQuizzes.map((q, i) => `<option value="${i}">${q.title || 'Đề '+(i+1)}</option>`).join('');
-      }
+  $('#quizSelectGroup').style.display = 'grid';
+  renderQuizSelect();
+}
+
       setupQuiz(0);
     }
     function setupQuiz(index) {
@@ -801,10 +824,43 @@ function upsertExamIntoAllQuizzes(examQuiz) {
 });
 
     $('#fileInput').onchange = (e) => {
-      const r = new FileReader();
-      r.onload = () => { try { handleData(JSON.parse(r.result)); } catch(err) { alert('File không hợp lệ!'); } };
-      r.readAsText(e.target.files[0]);
-    };
+  const f = e.target.files?.[0];
+  if (!f) return;
+
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      let text = String(r.result || '');
+
+      // 1) remove BOM (hay làm JSON.parse fail)
+      text = text.replace(/^\uFEFF/, '');
+
+      // 2) parse JSON
+      let data = JSON.parse(text);
+
+      // 3) support wrapper formats
+      // - { quizzes: [...] } hoặc { data: [...] } (phòng trường hợp bạn đóng gói)
+      if (data && !Array.isArray(data) && Array.isArray(data.quizzes)) data = data.quizzes;
+      if (data && !Array.isArray(data) && Array.isArray(data.data)) data = data.data;
+
+      // 4) nạp
+      handleData(data);
+
+      // UI message
+      $('#statusMessage').innerHTML = `✅ Đã nạp file: <b>${sanitizeHTML(f.name)}</b>. Bấm Bắt đầu ngay!`;
+    } catch (err) {
+      console.error(err);
+      alert('❌ File JSON không hợp lệ hoặc sai format.\nMở Console (F12) để xem lỗi chi tiết.');
+      $('#statusMessage').textContent = '❌ Không đọc được JSON. Kiểm tra lại định dạng.';
+    } finally {
+      // 5) reset để chọn lại cùng 1 file vẫn chạy onchange
+      e.target.value = '';
+    }
+  };
+
+  r.readAsText(f, 'utf-8');
+};
+
     function saveProgress() {
   if (!quiz || !answers.length) return;
 
@@ -823,7 +879,6 @@ function upsertExamIntoAllQuizzes(examQuiz) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
-// Giảm spam localStorage: gom nhiều lần gọi saveProgress trong thời gian ngắn
 const saveProgressDebounced = (() => {
   let t = null;
   return () => {
@@ -872,7 +927,7 @@ function buildQuestionMapOnce() {
   // cập nhật trạng thái ban đầu 1 lần
   updateAllCells();
   updateCurrentCell();
-  applyQuestionFilter(); // nếu bạn đang ở filter nào đó
+  applyQuestionFilter();
 }
 
 function updateCell(i) {
@@ -1560,3 +1615,187 @@ $('#btnMakeExam').onclick = () => {
     $('#examInfo').textContent = '❌ ' + (e?.message || e);
   }
 };
+// ===== GUIDED TOUR =====
+const TOUR_KEY = "shime_tour_done";
+let tourStep = 0;
+
+const tourSteps = [
+  { el: '#btnLoadJson', text: 'Bấm vào đây để nạp file JSON đề thi.' },
+  { el: '#btnLoadTextbook', text: 'Nhập giáo trình để tự tạo đề.' },
+  { el: '#toggleTheme', text: 'Đổi giao diện sáng / tối tại đây.' },
+  { el: '#mTheme', text: 'Trên điện thoại, đổi giao diện sáng / tối ở đây.' },
+  { el: '#quizSelect', text: 'Chọn bộ đề muốn làm.' },
+  { el: '#btnStart', text: 'Bắt đầu làm bài tại đây.' },
+  { el: '#bookmarkBtn', text: 'Đánh dấu câu hỏi cần xem lại.' },
+  { el: '#btnAIExplain', text: 'Nhờ AI giải thích khi chưa hiểu.' },
+  { el: '#questionMap', text: 'Đây là bản đồ câu hỏi: xem nhanh trạng thái làm bài.' },
+  { el: '#questionGrid', text: 'Bấm vào ô số để nhảy nhanh tới câu đó.' },
+  { el: '#filterWrong', text: 'Dùng bộ lọc để xem các câu sai.' },
+  { el: '#filterBookmark', text: 'Lọc các câu đã bookmark.' },
+  { el: '#searchBox', text: 'Tìm nhanh câu hỏi theo từ khóa.' }
+
+
+];
+function isVisible(el){
+  if (!el) return false;
+  const s = getComputedStyle(el);
+  if (s.display === 'none' || s.visibility === 'hidden' || s.opacity === '0') return false;
+  const r = el.getBoundingClientRect();
+  return r.width > 0 && r.height > 0;
+}
+
+function ensureStepContext(stepElSelector){
+  // Các bước này chỉ có khi đang ở màn làm bài (screenQuiz)
+  const needQuizScreen = [
+    '#bookmarkBtn','#btnAIExplain','#questionMap','#questionGrid','#qText','#qChoices',
+    '#filterAll','#filterBookmark','#filterWrong','#searchBox'
+  ].includes(stepElSelector);
+
+  if (needQuizScreen) {
+    if (getComputedStyle($('#screenQuiz')).display === 'none') {
+      const startIndex = tourSteps.findIndex(s => s.el === '#btnStart');
+      if (startIndex >= 0) {
+        tourStep = startIndex;
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function showTourStep(i){
+  const step = tourSteps[i];
+if (step.el === '#mTheme' || step.el === '#mLoadJson' || step.el === '#mLoadTextbook' || step.el === '#mHelp') {
+  document.getElementById('toolMenu')?.classList.add('show');
+} else {
+  document.getElementById('toolMenu')?.classList.remove('show');
+}
+
+  if (!ensureStepContext(step.el)) {
+    showTourStep(tourStep);
+    return;
+  }
+
+  const el = document.querySelector(step.el);
+
+  // không tồn tại hoặc đang ẩn => bỏ qua bước
+  if(!isVisible(el)) return nextTour();
+
+  // bỏ highlight cũ + set highlight mới
+  document.querySelectorAll('.tour-target').forEach(x => x.classList.remove('tour-target'));
+  el.classList.add('tour-target');
+
+  // cuộn tới đúng vị trí (map ở dưới)
+  el.scrollIntoView({ behavior:'smooth', block:'center', inline:'nearest' });
+
+  const r = el.getBoundingClientRect();
+  const spot = document.getElementById('tourSpotlight');
+  const tip = document.getElementById('tourTooltip');
+  const text = document.getElementById('tourText');
+
+  const pad = 8;
+
+  // spotlight theo viewport (overlay fixed)
+  const left = Math.max(pad, r.left - pad);
+  const top  = Math.max(pad, r.top - pad);
+  const w    = Math.min(window.innerWidth - pad*2, r.width + pad*2);
+  const h    = Math.min(window.innerHeight - pad*2, r.height + pad*2);
+
+  spot.style.left = left + 'px';
+  spot.style.top = top + 'px';
+  spot.style.width = w + 'px';
+  spot.style.height = h + 'px';
+
+  text.textContent = step.text;
+// ---- tooltip positioning (PC + mobile, never overflow) ----
+// ---- tooltip positioning (PC + mobile, never overflow) ----
+const pad2 = 12;
+const isMobile = window.innerWidth < 640;
+
+// set maxWidth theo viewport mỗi lần show step (để đo chuẩn)
+tip.style.maxWidth = `min(420px, ${window.innerWidth - pad2*2}px)`;
+
+// Ưu tiên: desktop đặt bên phải; nếu không đủ chỗ thì đặt bên trái; mobile đặt dưới
+let tx = isMobile ? r.left : (r.right + 12);
+let ty = isMobile ? (r.bottom + 12) : r.top;
+
+// đặt tạm
+tip.style.left = Math.round(tx) + 'px';
+tip.style.top  = Math.round(ty) + 'px';
+
+requestAnimationFrame(() => {
+  const tr = tip.getBoundingClientRect();
+
+  // nếu desktop mà bị tràn phải -> thử đặt sang trái target
+  if (!isMobile && (tx + tr.width > window.innerWidth - pad2)) {
+    tx = r.left - tr.width - 12;
+  }
+
+  // clamp X
+  tx = Math.min(window.innerWidth - pad2 - tr.width, Math.max(pad2, tx));
+
+  // clamp Y: nếu tràn dưới -> nhảy lên trên target
+  if (ty + tr.height > window.innerHeight - pad2) {
+    ty = r.top - tr.height - 12;
+  }
+  ty = Math.min(window.innerHeight - pad2 - tr.height, Math.max(pad2, ty));
+
+  tip.style.left = Math.round(tx) + 'px';
+  tip.style.top  = Math.round(ty) + 'px';
+});
+}
+function nextTour(){
+  tourStep++;
+  if(tourStep >= tourSteps.length) return endTour();
+  showTourStep(tourStep);
+}
+function prevTour(){
+  tourStep = Math.max(0, tourStep - 1);
+  showTourStep(tourStep);
+}
+function endTour(){
+  document.getElementById('tourOverlay').style.display = 'none';
+  localStorage.setItem(TOUR_KEY, '1');
+}
+
+document.getElementById('tourNext').onclick = nextTour;
+document.getElementById('tourPrev').onclick = prevTour;
+document.getElementById('tourSkip').onclick = endTour;
+function setTourVars({ overlay, bright, glow } = {}) {
+  const root = document.documentElement;
+  if (overlay != null) root.style.setProperty('--tour-overlay', String(overlay));
+  if (bright != null) root.style.setProperty('--tour-bright', String(bright));
+  if (glow != null) root.style.setProperty('--tour-glow', String(glow));
+}
+
+document.getElementById('tourDim')?.addEventListener('click', () => {
+  // tối nền hơn, target vẫn sáng
+  setTourVars({ overlay: 0.55, bright: 1.35, glow: 0.65 });
+});
+
+document.getElementById('tourBright')?.addEventListener('click', () => {
+  // nền sáng hơn (ít tối), target sáng hơn
+  setTourVars({ overlay: 0.35, bright: 1.55, glow: 0.85 });
+});
+
+document.getElementById('btnHelp').onclick =
+document.getElementById('mHelp').onclick = () => {
+  tourStep = 0;
+  document.getElementById('tourOverlay').style.display = 'block';
+  showTourStep(0);
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+  if(!localStorage.getItem(TOUR_KEY)){
+    document.getElementById('tourWelcome').style.display = 'flex';
+  }
+  document.getElementById('tourYes').onclick = () => {
+    document.getElementById('tourWelcome').style.display = 'none';
+    document.getElementById('tourOverlay').style.display = 'block';
+    showTourStep(0);
+  };
+  document.getElementById('tourNo').onclick = () => {
+    document.getElementById('tourWelcome').style.display = 'none';
+    localStorage.setItem(TOUR_KEY, '1');
+  };
+});
