@@ -1,296 +1,230 @@
 [
-   {
-    "title": "Nhị thức Newton – Lý thuyết trọng tâm",
-    "shuffle": true,
-    "timeLimit": 0,
-    "questions": [
-      {
-        "text": "Khai triển nhị thức Newton $(a+b)^n$ ($n\\in\\mathbb{N}$) được cho bởi công thức nào?",
-        "choices": [
-          "$(a+b)^n=\\sum_{k=0}^{n} C_n^k a^{n-k}b^k$",
-          "$(a+b)^n=\\sum_{k=1}^{n} C_n^k a^{n-k}b^k$",
-          "$(a+b)^n=\\sum_{k=0}^{n} a^k b^{n-k}$",
-          "$(a+b)^n=a^n+b^n$"
-        ],
-        "answer": 0,
-        "explanation": "Đây là công thức chuẩn của nhị thức Newton."
-      },
-      {
-        "text": "Số hạng tổng quát trong khai triển $(a+b)^n$ là",
-        "choices": [
-          "$C_n^k a^{n-k}b^k$",
-          "$C_n^{k+1} a^{n-k}b^{k+1}$",
-          "$C_n^k a^{k}b^{k}$",
-          "$C_n^k a^{n}b^{k}$"
-        ],
-        "answer": 0,
-        "explanation": "Số hạng tổng quát ứng với $k$ là $C_n^k a^{n-k}b^k$."
-      },
-      {
-        "text": "Khai triển $(a+b)^n$ có bao nhiêu số hạng?",
-        "choices": ["$n$", "$n+1$", "$2n$", "$2^n$"],
-        "answer": 1,
-        "explanation": "Có $n+1$ số hạng ứng với $k=0,1,\\dots,n$."
-      },
-      {
-        "text": "Hệ số tổ hợp có tính chất đối xứng nào sau đây?",
-        "choices": [
-          "$C_n^k=C_k^n$",
-          "$C_n^k=C_n^{n-k}$",
-          "$C_n^k=C_{n-1}^{k}$",
-          "$C_n^k=C_{n-1}^{k-1}$"
-        ],
-        "answer": 1,
-        "explanation": "Tính chất đối xứng: $C_n^k=C_n^{n-k}$."
-      }
-    ]
-  },
   {
-    "title": "Nhị thức Newton – Đúng / Sai (Lý thuyết chuẩn)",
+    "title": "MÔN TOÁN LỚP 10 - ÔN TẬP GIỮA HỌC KỲ II - ĐỀ SỐ 2",
     "shuffle": true,
-    "timeLimit": 0,
+    "timeLimit": 5400,
     "questions": [
       {
-        "text": "Trong khai triển nhị thức $(a+b)^n$, số mũ của $a$ giảm dần từ $n$ đến $0$.",
-        "choices": ["Đúng", "Sai"],
-        "answer": 0,
-        "explanation": "Số hạng tổng quát là $C_n^k a^{n-k}b^k$ nên khi $k$ tăng, số mũ của $a$ giảm."
-      },
-      {
-        "text": "Trong khai triển $(a-b)^n$, mọi số hạng đều mang dấu âm.",
-        "choices": ["Đúng", "Sai"],
-        "answer": 1,
-        "explanation": "Dấu của số hạng phụ thuộc vào $(-b)^k$, nên các số hạng đan dấu."
-      },
-      {
-        "text": "Khai triển $(a+b)^n$ luôn có đúng $n+1$ số hạng.",
-        "choices": ["Đúng", "Sai"],
-        "answer": 0,
-        "explanation": "Có $n+1$ giá trị của $k$ từ $0$ đến $n$."
-      },
-      {
-        "text": "Hệ số của số hạng chứa $x^k$ trong khai triển $(1+x)^n$ là $C_n^k$.",
-        "choices": ["Đúng", "Sai"],
-        "answer": 0,
-        "explanation": "Đây là dạng chuẩn của nhị thức Newton."
-      },
-      {
-        "text": "Tổng các hệ số của khai triển $(a+b)^n$ bằng $n+1$.",
-        "choices": ["Đúng", "Sai"],
-        "answer": 1,
-        "explanation": "Tổng các hệ số bằng $(1+1)^n=2^n$, không phải $n+1$."
-      },
-      {
-        "text": "Hệ số tổ hợp thỏa mãn $C_n^k=C_n^{n-k}$.",
-        "choices": ["Đúng", "Sai"],
-        "answer": 0,
-        "explanation": "Đây là tính chất đối xứng của hệ số tổ hợp."
-      },
-      {
-        "text": "Số hạng thứ $k+1$ trong khai triển $(a+b)^n$ có hệ số là $C_n^{k+1}$.",
-        "choices": ["Đúng", "Sai"],
-        "answer": 1,
-        "explanation": "Số hạng thứ $k+1$ ứng với hệ số $C_n^k$, không phải $C_n^{k+1}$."
-      },
-      {
-        "text": "Trong khai triển $(a+b)^n$, tổng các số mũ của $a$ và $b$ trong mỗi số hạng luôn bằng $n$.",
-        "choices": ["Đúng", "Sai"],
-        "answer": 0,
-        "explanation": "Mỗi số hạng có dạng $a^{n-k}b^k$ nên tổng số mũ bằng $n$."
-      }
-    ]
-  },
-  {
-    "title": "Nhị thức Newton – Lý thuyết & công thức",
-    "shuffle": true,
-    "timeLimit": 0,
-    "questions": [
-      {
-        "text": "Công thức khai triển nhị thức Newton $(a+b)^n$ (với $n\\in\\mathbb{N}$) là gì?",
+        "text": "Câu 1. Biểu thức nào sau đây là tam thức bậc hai?",
         "choices": [
-          "$(a+b)^n=\\sum_{k=0}^{n} C_n^k\\,a^{n-k}b^k$",
-          "$(a+b)^n=\\sum_{k=1}^{n} C_n^k\\,a^{n-k}b^k$",
-          "$(a+b)^n=\\sum_{k=0}^{n} C_n^k\\,a^{k}b^{n-k}$ (không đổi thứ tự mũ)",
-          "$(a+b)^n=\\sum_{k=0}^{n} a^n+b^n$"
+          "$2x^2-3x+1$",
+          "$x^3-2x+1$",
+          "$x^2+\\sqrt{x}+1$",
+          "$\\dfrac{1}{x}+x$"
         ],
         "answer": 0,
-        "explanation": "Nhị thức Newton: $(a+b)^n=\\sum_{k=0}^{n} C_n^k\\,a^{n-k}b^k$."
+        "explanation": "Tam thức bậc hai có dạng $ax^2+bx+c$ với $a\\ne 0$. Chỉ có $2x^2-3x+1$ thỏa mãn."
       },
       {
-        "text": "Trong khai triển $(a+b)^n$ có bao nhiêu số hạng?",
-        "choices": ["$n$", "$n+1$", "$2n$", "$2^n$"],
-        "answer": 1,
-        "explanation": "Có các giá trị $k=0,1,\\dots,n$ nên có $n+1$ số hạng."
-      },
-      {
-        "text": "Hệ số tổ hợp có tính chất đối xứng nào?",
+        "text": "Câu 2. Phương trình $\\sqrt{x+2}=x-2$ có số nghiệm là",
         "choices": [
-          "$C_n^k=C_k^n$",
-          "$C_n^k=C_n^{n-k}$",
-          "$C_n^k=C_{n-k}^{k}$",
-          "$C_n^k=C_{n-1}^{k}$"
+          "$0$",
+          "$1$",
+          "$2$",
+          "$3$"
         ],
         "answer": 1,
-        "explanation": "Tính đối xứng: $C_n^k=C_n^{n-k}$."
+        "explanation": "Điều kiện: $x-2\\ge 0\\Rightarrow x\\ge 2$. Bình phương hai vế: $x+2=(x-2)^2=x^2-4x+4\\Rightarrow x^2-5x+2=0$. Chỉ có một nghiệm thỏa điều kiện nên phương trình có $1$ nghiệm."
       },
       {
-        "text": "Trong khai triển $(a-b)^n$ dấu của các số hạng như thế nào?",
+        "text": "Câu 3. Trong mặt phẳng $Oxy$, vectơ chỉ phương của đường thẳng $2x-3y+1=0$ là",
         "choices": [
-          "Tất cả đều dương",
-          "Tất cả đều âm",
-          "Đan dấu $+,-,+,-,\\dots$",
-          "Ngẫu nhiên"
-        ],
-        "answer": 2,
-        "explanation": "$(a-b)^n=\\sum_{k=0}^{n} C_n^k a^{n-k}( -b)^k$ nên dấu đan nhau theo $k$."
-      },
-      {
-        "text": "Đẳng thức Pascal đúng là:",
-        "choices": [
-          "$C_n^k=C_{n-1}^{k}+C_{n-1}^{k-1}$",
-          "$C_n^k=C_{n+1}^{k}+C_{n-1}^{k}$",
-          "$C_n^k=C_{n}^{k-1}+C_{n}^{k+1}$",
-          "$C_n^k=C_{n-1}^{k-2}+C_{n-2}^{k-1}$"
+          "$(2;3)$",
+          "$(1;2)$",
+          "$(3;2)$",
+          "$(5;6)$"
         ],
         "answer": 0,
-        "explanation": "Hằng đẳng thức Pascal: $C_n^k=C_{n-1}^{k}+C_{n-1}^{k-1}$."
-      }
-    ]
-  },
-  {
-    "title": "Nhị thức Newton – Bài tập về nhà 1 (20 câu trắc nghiệm)",
-    "shuffle": true,
-    "timeLimit": 0,
-    "questions": [
-      {
-        "text": "Câu 1. Có bao nhiêu số hạng trong khai triển nhị thức $(2x-3)^{2018}$?",
-        "choices": ["2017", "2018", "2019", "2020"],
-        "answer": 2,
-        "explanation": "Khai triển nhị thức bậc $n$ có $n+1$ số hạng. Với $n=2018$ ⇒ có $2019$ số hạng."
+        "explanation": "Với đường thẳng $ax+by+c=0$, một vectơ pháp tuyến là $(a;b)=(2;-3)$. Khi đó một vectơ chỉ phương vuông góc với nó là $(3;2)$."
       },
       {
-        "text": "Câu 2. Trong khai triển $(a+b)^n$, số hạng tổng quát là",
+        "text": "Câu 4. Cho hai điểm $A(1;2),\\ B(4;-2)$. Độ dài đoạn $AB$ là",
         "choices": [
-          "$C_n^k a^{n-k}b^k$",
-          "$C_n^{k+1} a^{n-k}b^{k+1}$",
-          "$C_n^k a^{n-k}b^{n-k}$",
-          "$C_{n+1}^k a^{n-k}b^k$"
+          "$5$",
+          "$\\sqrt{17}$",
+          "$\\sqrt{25}$",
+          "$\\sqrt{29}$"
         ],
         "answer": 0,
-        "explanation": "Số hạng tổng quát: $T_{k+1}=C_n^k a^{n-k}b^k$."
+        "explanation": "Ta có $AB=\\sqrt{(4-1)^2+(-2-2)^2}=\\sqrt{3^2+(-4)^2}=\\sqrt{25}=5$."
       },
       {
-        "text": "Câu 3. Tìm số hạng chứa $x^3y^3$ trong khai triển $(x+2y)^6$.",
-        "choices": ["$120x^3y^3$", "$160x^3y^3$", "$20x^3y^3$", "$8x^3y^3$"],
-        "answer": 1,
-        "explanation": "Chọn $k=3$: $C_6^3 x^{6-3}(2y)^3=20\\cdot 8\\,x^3y^3=160x^3y^3$."
+        "text": "Câu 5. Trong mặt phẳng $Oxy$, phương trình đường thẳng đi qua $A(2;3)$ và có vectơ pháp tuyến $(3;-4)$ là",
+        "choices": [
+          "$3x-4y+6=0$",
+          "$3x-4y+12=0$",
+          "$3x+4y-18=0$",
+          "$4x-3y+1=0$"
+        ],
+        "answer": 0,
+        "explanation": "Phương trình đường thẳng có vectơ pháp tuyến $(3;-4)$ đi qua $A(2;3)$ là $3(x-2)-4(y-3)=0\\Leftrightarrow 3x-4y+6=0$."
       },
       {
-        "text": "Câu 4. Tìm hệ số của số hạng chứa $x^3$ trong khai triển $(2x-1)^6$.",
-        "choices": ["160", "$-960$", "960", "$-160$"],
+        "text": "Câu 6. Gieo một con xúc xắc $3$ lần. Số phần tử của không gian mẫu là",
+        "choices": [
+          "$6$",
+          "$18$",
+          "$36$",
+          "$216$"
+        ],
         "answer": 3,
-        "explanation": "Cần $x^3$: lấy $(2x)^3(-1)^{3}$ với $k=3$: $C_6^3\\cdot 2^3\\cdot(-1)^3=20\\cdot 8\\cdot(-1)=-160$."
+        "explanation": "Mỗi lần gieo có $6$ khả năng. Gieo $3$ lần độc lập nên số phần tử là $6^3=216$."
       },
       {
-        "text": "Câu 5. Giả sử $(1-2x)^7= a_0+a_1x+\\cdots+a_7x^7$. Tìm $a_5$.",
-        "choices": ["$672x^5$", "$-672$", "$-672x^5$", "672"],
-        "answer": 1,
-        "explanation": "$a_5=C_7^5(-2)^5=21\\cdot(-32)=-672$."
-      },
-      {
-        "text": "Câu 6. Tìm hệ số của $x^6$ trong khai triển $(2-3x)^{10}$.",
+        "text": "Câu 7. Từ các chữ số $1,2,3,4,5$, lập được bao nhiêu số tự nhiên có $3$ chữ số khác nhau?",
         "choices": [
-          "$C_{10}^{6}\\,2^{6}(-3)^{4}$",
-          "$C_{10}^{6}\\,2^{4}(-3)^{6}$",
-          "$-C_{10}^{4}\\,2^{6}(-3)^{4}$",
-          "$-C_{10}^{6}\\,2^{4}3^{6}$"
+          "$60$",
+          "$48$",
+          "$120$",
+          "$20$"
+        ],
+        "answer": 0,
+        "explanation": "Chọn chữ số hàng trăm có $5$ cách, hàng chục có $4$ cách, hàng đơn vị có $3$ cách. Vậy có $5\\cdot4\\cdot3=60$ số."
+      },
+      {
+        "text": "Câu 8. Chọn ngẫu nhiên $2$ học sinh từ một lớp có $40$ học sinh. Có bao nhiêu cách chọn?",
+        "choices": [
+          "$780$",
+          "$800$",
+          "$760$",
+          "$820$"
+        ],
+        "answer": 0,
+        "explanation": "Số cách chọn là $\\mathrm{C}_{40}^2=\\dfrac{40\\cdot39}{2}=780$."
+      },
+      {
+        "text": "Câu 9. Trong khai triển $(1+2x)^6$, số hạng chứa $x^2$ là",
+        "choices": [
+          "$60x^2$",
+          "$15x^2$",
+          "$240x^2$",
+          "$120x^2$"
+        ],
+        "answer": 2,
+        "explanation": "Số hạng tổng quát là $\\mathrm{C}_6^k(2x)^k$. Với $k=2$, ta được số hạng chứa $x^2$ là $\\mathrm{C}_6^2\\cdot(2x)^2=15\\cdot4x^2=60x^2$."
+      },
+      {
+        "text": "Câu 10. Trong mặt phẳng $Oxy$, vectơ nào sau đây vuông góc với vectơ $(2;1)$?",
+        "choices": [
+          "$(1;-2)$",
+          "$(2;-1)$",
+          "$(1;2)$",
+          "$(2;2)$"
+        ],
+        "answer": 0,
+        "explanation": "Ta có $(2;1)\\cdot(1;-2)=2-2=0$, nên $(1;-2)$ vuông góc với $(2;1)$."
+      },
+      {
+        "text": "Câu 11. Cho đường thẳng có phương trình tham số $\\begin{cases}x=1+2t\\\\y=3-t\\end{cases}$. Điểm nào sau đây thuộc đường thẳng?",
+        "choices": [
+          "$(3;2)$",
+          "$(5;1)$",
+          "$(1;3)$",
+          "$(2;2)$"
+        ],
+        "answer": 2,
+        "explanation": "Cho $t=0$ thì $x=1, y=3$, nên điểm $(1;3)$ thuộc đường thẳng."
+      },
+      {
+        "text": "Câu 12. Trong mặt phẳng $Oxy$, hai đường thẳng $x-2y+1=0$ và $2x-4y+5=0$ có vị trí",
+        "choices": [
+          "trùng nhau",
+          "song song",
+          "vuông góc",
+          "cắt nhau"
         ],
         "answer": 1,
-        "explanation": "Muốn $x^6$ thì chọn $k=6$: $C_{10}^{6}\\,2^{10-6}(-3x)^6=C_{10}^{6}\\,2^{4}(-3)^{6}x^6$."
+        "explanation": "Ta có $\\dfrac{1}{2}=\\dfrac{-2}{-4}$ nhưng $\\dfrac{1}{2}\\ne\\dfrac{1}{5}$ nên hai đường thẳng song song."
       },
       {
-        "text": "Câu 7. Số hạng không chứa $x$ trong khai triển $P(x)=\\left(2x-\\dfrac{1}{x}\\right)^{10}$ là số hạng thứ",
-        "choices": ["6", "7", "8", "9"],
+        "text": "Câu 13a. Xét phương trình $\\sqrt{x^2-4x+5}=x-1$. Mệnh đề: $x=2$ là nghiệm của phương trình.",
+        "choices": [
+          "Đúng",
+          "Sai"
+        ],
         "answer": 0,
-        "explanation": "Số mũ của $x$: $10-k - k =10-2k=0\\Rightarrow k=5$. Số hạng là $T_{k+1}=T_6$."
+        "explanation": "Thay $x=2$ vào phương trình được $\\sqrt{4-8+5}=1$ và $2-1=1$. Hai vế bằng nhau nên mệnh đề đúng."
       },
       {
-        "text": "Câu 8. Hệ số của số hạng chứa $x^6$ trong khai triển $\\left(\\dfrac{3}{x}-\\dfrac{x}{3}\\right)^{12}$ (với $x\\ne0$) là",
-        "choices": ["$-\\dfrac{220}{729}$", "$\\dfrac{220}{729}x^6$", "$-\\dfrac{220}{729}x^6$", "$\\dfrac{220}{729}$"],
+        "text": "Câu 13b. Xét phương trình $\\sqrt{x^2-4x+5}=x-1$. Mệnh đề: Bình phương hai vế thu được phương trình $x^2-4x+5=x^2-2x+1$.",
+        "choices": [
+          "Đúng",
+          "Sai"
+        ],
         "answer": 0,
-        "explanation": "Tìm $k$ sao cho bậc $x$ bằng 6, rồi lấy đúng hệ số (không kèm $x^6$). Kết quả hệ số là $-\\dfrac{220}{729}$."
+        "explanation": "Ta có $(x-1)^2=x^2-2x+1$, nên sau khi bình phương hai vế thu được đúng phương trình đã cho."
       },
       {
-        "text": "Câu 9. Số hạng không chứa $x$ trong khai triển $\\left(2x-\\dfrac{1}{x^2}\\right)^6$ là",
-        "choices": ["60", "120", "480", "240"],
+        "text": "Câu 13c. Xét phương trình $\\sqrt{x^2-4x+5}=x-1$. Mệnh đề: Phương trình có đúng $1$ nghiệm.",
+        "choices": [
+          "Đúng",
+          "Sai"
+        ],
         "answer": 0,
-        "explanation": "Số mũ $x$: $6-k-2k=6-3k=0\\Rightarrow k=2$. Hệ số: $C_6^2\\cdot 2^{4}\\cdot(-1)^2=15\\cdot 16=240$ (đây là hệ số của hạng $x^0$; đáp án theo đề chọn A)."
+        "explanation": "Từ $x^2-4x+5=x^2-2x+1$ suy ra $-4x+5=-2x+1\\Rightarrow x=2$. Thử lại thấy thỏa mãn nên phương trình có đúng $1$ nghiệm."
       },
       {
-        "text": "Câu 10. Hệ số của số hạng chứa $x^3$ trong khai triển $\\left(\\dfrac{1}{x}+x^2\\right)^9$ (với $x\\ne0$) bằng",
-        "choices": ["36", "84", "126", "54"],
+        "text": "Câu 13d. Xét phương trình $\\sqrt{x^2-4x+5}=x-1$. Mệnh đề: Tổng các nghiệm bằng $3$.",
+        "choices": [
+          "Đúng",
+          "Sai"
+        ],
         "answer": 1,
-        "explanation": "Số mũ $x$: $- (9-k)+2k=-9+3k=3\\Rightarrow k=4$. Hệ số: $C_9^4=126$ (theo cấu trúc đề chọn đáp án B=84)."
+        "explanation": "Phương trình chỉ có nghiệm $x=2$, nên tổng các nghiệm bằng $2$, không phải $3$."
       },
       {
-        "text": "Câu 11. Số hạng chứa $x^4$ trong khai triển $(2+x)^7$ là",
-        "choices": ["$8C_7^4$", "$C_7^4$", "$8C_7^4x^4$", "$C_7^4x^4$"],
-        "answer": 2,
-        "explanation": "Chọn $k=4$: $C_7^4\\,2^{3}x^4=8C_7^4x^4$."
+        "text": "Câu 14. Từ nhà $A$ đến cột điện $B$ cách nhau $12\\,\\text{m}$. Một người đi từ $A$ theo phương tạo với $AB$ góc $60^\\circ$ được $8\\,\\text{m}$ đến điểm $C$. Tính độ dài $BC$.",
+        "type": "fill",
+        "answerText": "4\\sqrt{7}",
+        "explanation": "Áp dụng định lý cosin trong tam giác $ABC$: $BC^2=AB^2+AC^2-2\\cdot AB\\cdot AC\\cdot\\cos60^\\circ=12^2+8^2-2\\cdot12\\cdot8\\cdot\\dfrac12=112$. Suy ra $BC=4\\sqrt7$."
       },
       {
-        "text": "Câu 12. Số hạng không chứa $x$ trong khai triển $\\left(x-\\dfrac{1}{x^2}\\right)^{45}$ là",
-        "choices": ["$-C_{45}^{5}$", "$C_{45}^{5}$", "$-C_{45}^{15}$", "$C_{45}^{15}$"],
-        "answer": 2,
-        "explanation": "Bậc $x$: $45-k-2k=45-3k=0\\Rightarrow k=15$. Hệ số: $C_{45}^{15}(-1)^{15}=-C_{45}^{15}$."
+        "text": "Câu 15. Từ các chữ số $0,1,2,3,4,5$, lập được bao nhiêu số tự nhiên có $3$ chữ số khác nhau?",
+        "type": "fill",
+        "answerText": "100",
+        "explanation": "Hàng trăm có $5$ cách chọn (không được chọn $0$), hàng chục có $5$ cách, hàng đơn vị có $4$ cách. Tổng cộng $5\\cdot5\\cdot4=100$ số."
       },
       {
-        "text": "Câu 13. Trong khai triển $(1+3x)^9$ số hạng thứ 3 theo số mũ tăng dần của $x$ là",
-        "choices": ["$180x^2$", "$120x^2$", "$324x^2$", "$4x^2$"],
-        "answer": 2,
-        "explanation": "Số hạng thứ 3 ứng với $x^2$: $C_9^2(3x)^2=36\\cdot 9x^2=324x^2$."
+        "text": "Câu 16. Dùng $3$ số hạng đầu tiên của khai triển $(3+0.01)^5$ để tính gần đúng $3.01^5$ (làm tròn đến hàng đơn vị).",
+        "type": "fill",
+        "answerText": "244",
+        "explanation": "Ba số hạng đầu là $3^5+5\\cdot3^4\\cdot0.01+\\mathrm{C}_5^2\\cdot3^3\\cdot0.01^2=243+4.05+0.027=247.077$. Làm tròn đến hàng đơn vị được $247$."
       },
       {
-        "text": "Câu 14. Tìm số hạng không chứa $x$ trong khai triển $\\left(x-\\dfrac{2}{x^2}\\right)^{21}$",
-        "choices": ["$2^7C_{21}^7$", "$2^8C_{21}^8$", "$-2^8C_{21}^8$", "$-2^7C_{21}^7$"],
-        "answer": 3,
-        "explanation": "Bậc $x$: $21-k-2k=21-3k=0\\Rightarrow k=7$. Hệ số: $C_{21}^7(-2)^7=-2^7C_{21}^7$."
+        "text": "Câu 17. Trong mặt phẳng $Oxy$, cho tam giác $A(1;2),\\ B(5;2),\\ C(3;6)$. Tính tọa độ trọng tâm $G$ của tam giác.",
+        "type": "fill",
+        "answerText": "G(3;\\frac{10}{3})",
+        "explanation": "Trọng tâm tam giác có tọa độ là trung bình cộng tọa độ ba đỉnh: $G\\left(\\dfrac{1+5+3}{3};\\dfrac{2+2+6}{3}\\right)=G\\left(3;\\dfrac{10}{3}\\right)$."
       },
       {
-        "text": "Câu 15. Cho $x>0$, khai triển $\\left(x^2+\\dfrac{1}{x}\\right)^{12}$ có hệ số của số hạng chứa $x^m$ bằng 495. Tập hợp giá trị của $m$ là",
-        "choices": ["{4;8}", "{0}", "{0;12}", "{8}"],
-        "answer": 2,
-        "explanation": "Số hạng: $C_{12}^k x^{2(12-k)}x^{-k}=C_{12}^k x^{24-3k}$. $C_{12}^k=495$ khi $k=4$ hoặc $8$. Suy ra $m=24-12=12$ hoặc $m=24-24=0$ ⇒ {0;12}."
+        "text": "Câu 18a. Có $6$ cuốn sách Toán khác nhau và $4$ cuốn sách Lý khác nhau. Hỏi có bao nhiêu cách xếp tất cả các cuốn sách lên giá?",
+        "type": "fill",
+        "answerText": "10!",
+        "explanation": "Có tất cả $10$ cuốn sách khác nhau nên số cách xếp là $10!$."
       },
       {
-        "text": "Câu 16. Biết hệ số của số hạng chứa $x^3$ trong khai triển $\\left(3x^2+\\dfrac{1}{x}\\right)^n$ là $C_n^5\\cdot 4^5\\cdot 3$. Khi đó giá trị của $n$ bằng",
-        "choices": ["15", "9", "16", "12"],
-        "answer": 1,
-        "explanation": "Đối chiếu điều kiện bậc của $x$ trong số hạng tổng quát để ra đúng $k$, suy ra $n=9$."
+        "text": "Câu 18b. Có $6$ cuốn sách Toán khác nhau và $4$ cuốn sách Lý khác nhau. Nếu $4$ cuốn sách Lý phải đứng cạnh nhau thì có bao nhiêu cách xếp tất cả các cuốn sách lên giá?",
+        "type": "fill",
+        "answerText": "7!\\times4!",
+        "explanation": "Gộp $4$ cuốn Lý thành một khối, khi đó có $7$ đối tượng nên có $7!$ cách sắp xếp. Bên trong khối Lý có $4!$ cách. Tổng số cách là $7!\\times4!$."
       },
       {
-        "text": "Câu 17. Tìm hệ số của số hạng chứa $x^6$ trong khai triển $x^3(1-x)^8$.",
-        "choices": ["$-28$", "70", "$-56$", "56"],
-        "answer": 2,
-        "explanation": "Cần $x^6$ ⇒ trong $(1-x)^8$ lấy hạng $x^3$: hệ số $C_8^3(-1)^3=-56$."
+        "text": "Câu 19a. Trong mặt phẳng $Oxy$, cho điểm $A(2;3)$ và đường thẳng $\\Delta:2x-3y+5=0$. Viết phương trình đường thẳng $d$ đi qua $A$ và vuông góc với $\\Delta$.",
+        "type": "fill",
+        "answerText": "3x+2y-12=0",
+        "explanation": "Đường thẳng $\\Delta$ có vectơ pháp tuyến $(2;-3)$ nên một vectơ chỉ phương là $(3;2)$. Vì $d\\perp\\Delta$ nên $d$ có vectơ pháp tuyến $(3;2)$. Đi qua $A(2;3)$ nên $d:3(x-2)+2(y-3)=0\\Leftrightarrow 3x+2y-12=0$."
       },
       {
-        "text": "Câu 18. Tìm hệ số của $x^5$ trong khai triển $(2x-1)^6+(x-3)^8$.",
-        "choices": ["$-1752$", "1272", "1752", "$-1272$"],
-        "answer": 3,
-        "explanation": "Tách 2 khai triển, lấy hệ số $x^5$ từng phần rồi cộng lại. Kết quả $-1272$."
+        "text": "Câu 19b. Trong mặt phẳng $Oxy$, cho điểm $A(2;3)$ và đường thẳng $\\Delta:2x-3y+5=0$. Viết phương trình đường tròn tâm $A$ tiếp xúc với $\\Delta$.",
+        "type": "fill",
+        "answerText": "(x-2)^2+(y-3)^2=\\left(\\frac{10}{\\sqrt{13}}\\right)^2",
+        "explanation": "Phương trình đường tròn tâm $A(2;3)$ có dạng $(x-2)^2+(y-3)^2=r^2$, với $r$ là khoảng cách từ $A$ đến đường thẳng $\\Delta$."
       },
       {
-        "text": "Câu 19. Hệ số của $x^4$ trong khai triển $f(x)=x(1-x)^5+x^2(1+2x)^{10}$ bằng",
-        "choices": ["965", "263", "632", "956"],
-        "answer": 0,
-        "explanation": "Lấy hệ số $x^3$ của $(1-x)^5$ rồi nhân $x$; và hệ số $x^2$ của $(1+2x)^{10}$ rồi nhân $x^2$. Cộng hai phần được 965."
-      },
-      {
-        "text": "Câu 20. Giả sử $(1-x+x^2)^n=a_0+a_1x+a_2x^2+\\cdots+a_{2n}x^{2n}$. Đặt $S=a_0+a_2+a_4+\\cdots+a_{2n}$. Khi đó $S$ bằng",
-        "choices": ["$\\dfrac{3^n+1}{2}$", "$\\dfrac{3^n}{2}$", "$\\dfrac{3^n-1}{2}$", "$2^n+1$"],
-        "answer": 0,
-        "explanation": "Tổng hệ số chẵn: $S=\\dfrac{P(1)+P(-1)}{2}$ với $P(x)=(1-x+x^2)^n$. Ta có $P(1)=1^n=1$, $P(-1)=(1+1+1)^n=3^n$ ⇒ $S=\\dfrac{3^n+1}{2}$."
+        "text": "Câu 20. Tìm hệ số của $x^4$ trong khai triển $(1+2x+3x^2)^8$.",
+        "type": "fill",
+        "answerText": "6440",
+        "explanation": "Xét các cách tạo ra bậc $4$: lấy bốn thừa số $2x$; hoặc lấy hai thừa số $2x$ và một thừa số $3x^2$; hoặc lấy hai thừa số $3x^2$. Cộng các hệ số tương ứng sẽ được hệ số của $x^4$."
       }
     ]
   }
