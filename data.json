@@ -1,231 +1,62 @@
-[
-  {
-    "title": "MÔN TOÁN LỚP 10 - ÔN TẬP GIỮA HỌC KỲ II - ĐỀ SỐ 2",
-    "shuffle": true,
-    "timeLimit": 5400,
-    "questions": [
-      {
-        "text": "Câu 1. Biểu thức nào sau đây là tam thức bậc hai?",
-        "choices": [
-          "$2x^2-3x+1$",
-          "$x^3-2x+1$",
-          "$x^2+\\sqrt{x}+1$",
-          "$\\dfrac{1}{x}+x$"
-        ],
-        "answer": 0,
-        "explanation": "Tam thức bậc hai có dạng $ax^2+bx+c$ với $a\\ne 0$. Chỉ có $2x^2-3x+1$ thỏa mãn."
-      },
-      {
-        "text": "Câu 2. Phương trình $\\sqrt{x+2}=x-2$ có số nghiệm là",
-        "choices": [
-          "$0$",
-          "$1$",
-          "$2$",
-          "$3$"
-        ],
-        "answer": 1,
-        "explanation": "Điều kiện: $x-2\\ge 0\\Rightarrow x\\ge 2$. Bình phương hai vế: $x+2=(x-2)^2=x^2-4x+4\\Rightarrow x^2-5x+2=0$. Chỉ có một nghiệm thỏa điều kiện nên phương trình có $1$ nghiệm."
-      },
-      {
-        "text": "Câu 3. Trong mặt phẳng $Oxy$, vectơ chỉ phương của đường thẳng $2x-3y+1=0$ là",
-        "choices": [
-          "$(2;3)$",
-          "$(1;2)$",
-          "$(3;2)$",
-          "$(5;6)$"
-        ],
-        "answer": 0,
-        "explanation": "Với đường thẳng $ax+by+c=0$, một vectơ pháp tuyến là $(a;b)=(2;-3)$. Khi đó một vectơ chỉ phương vuông góc với nó là $(3;2)$."
-      },
-      {
-        "text": "Câu 4. Cho hai điểm $A(1;2),\\ B(4;-2)$. Độ dài đoạn $AB$ là",
-        "choices": [
-          "$5$",
-          "$\\sqrt{17}$",
-          "$\\sqrt{25}$",
-          "$\\sqrt{29}$"
-        ],
-        "answer": 0,
-        "explanation": "Ta có $AB=\\sqrt{(4-1)^2+(-2-2)^2}=\\sqrt{3^2+(-4)^2}=\\sqrt{25}=5$."
-      },
-      {
-        "text": "Câu 5. Trong mặt phẳng $Oxy$, phương trình đường thẳng đi qua $A(2;3)$ và có vectơ pháp tuyến $(3;-4)$ là",
-        "choices": [
-          "$3x-4y+6=0$",
-          "$3x-4y+12=0$",
-          "$3x+4y-18=0$",
-          "$4x-3y+1=0$"
-        ],
-        "answer": 0,
-        "explanation": "Phương trình đường thẳng có vectơ pháp tuyến $(3;-4)$ đi qua $A(2;3)$ là $3(x-2)-4(y-3)=0\\Leftrightarrow 3x-4y+6=0$."
-      },
-      {
-        "text": "Câu 6. Gieo một con xúc xắc $3$ lần. Số phần tử của không gian mẫu là",
-        "choices": [
-          "$6$",
-          "$18$",
-          "$36$",
-          "$216$"
-        ],
-        "answer": 3,
-        "explanation": "Mỗi lần gieo có $6$ khả năng. Gieo $3$ lần độc lập nên số phần tử là $6^3=216$."
-      },
-      {
-        "text": "Câu 7. Từ các chữ số $1,2,3,4,5$, lập được bao nhiêu số tự nhiên có $3$ chữ số khác nhau?",
-        "choices": [
-          "$60$",
-          "$48$",
-          "$120$",
-          "$20$"
-        ],
-        "answer": 0,
-        "explanation": "Chọn chữ số hàng trăm có $5$ cách, hàng chục có $4$ cách, hàng đơn vị có $3$ cách. Vậy có $5\\cdot4\\cdot3=60$ số."
-      },
-      {
-        "text": "Câu 8. Chọn ngẫu nhiên $2$ học sinh từ một lớp có $40$ học sinh. Có bao nhiêu cách chọn?",
-        "choices": [
-          "$780$",
-          "$800$",
-          "$760$",
-          "$820$"
-        ],
-        "answer": 0,
-        "explanation": "Số cách chọn là $\\mathrm{C}_{40}^2=\\dfrac{40\\cdot39}{2}=780$."
-      },
-      {
-        "text": "Câu 9. Trong khai triển $(1+2x)^6$, số hạng chứa $x^2$ là",
-        "choices": [
-          "$60x^2$",
-          "$15x^2$",
-          "$240x^2$",
-          "$120x^2$"
-        ],
-        "answer": 2,
-        "explanation": "Số hạng tổng quát là $\\mathrm{C}_6^k(2x)^k$. Với $k=2$, ta được số hạng chứa $x^2$ là $\\mathrm{C}_6^2\\cdot(2x)^2=15\\cdot4x^2=60x^2$."
-      },
-      {
-        "text": "Câu 10. Trong mặt phẳng $Oxy$, vectơ nào sau đây vuông góc với vectơ $(2;1)$?",
-        "choices": [
-          "$(1;-2)$",
-          "$(2;-1)$",
-          "$(1;2)$",
-          "$(2;2)$"
-        ],
-        "answer": 0,
-        "explanation": "Ta có $(2;1)\\cdot(1;-2)=2-2=0$, nên $(1;-2)$ vuông góc với $(2;1)$."
-      },
-      {
-        "text": "Câu 11. Cho đường thẳng có phương trình tham số $\\begin{cases}x=1+2t\\\\y=3-t\\end{cases}$. Điểm nào sau đây thuộc đường thẳng?",
-        "choices": [
-          "$(3;2)$",
-          "$(5;1)$",
-          "$(1;3)$",
-          "$(2;2)$"
-        ],
-        "answer": 2,
-        "explanation": "Cho $t=0$ thì $x=1, y=3$, nên điểm $(1;3)$ thuộc đường thẳng."
-      },
-      {
-        "text": "Câu 12. Trong mặt phẳng $Oxy$, hai đường thẳng $x-2y+1=0$ và $2x-4y+5=0$ có vị trí",
-        "choices": [
-          "trùng nhau",
-          "song song",
-          "vuông góc",
-          "cắt nhau"
-        ],
-        "answer": 1,
-        "explanation": "Ta có $\\dfrac{1}{2}=\\dfrac{-2}{-4}$ nhưng $\\dfrac{1}{2}\\ne\\dfrac{1}{5}$ nên hai đường thẳng song song."
-      },
-      {
-        "text": "Câu 13a. Xét phương trình $\\sqrt{x^2-4x+5}=x-1$. Mệnh đề: $x=2$ là nghiệm của phương trình.",
-        "choices": [
-          "Đúng",
-          "Sai"
-        ],
-        "answer": 0,
-        "explanation": "Thay $x=2$ vào phương trình được $\\sqrt{4-8+5}=1$ và $2-1=1$. Hai vế bằng nhau nên mệnh đề đúng."
-      },
-      {
-        "text": "Câu 13b. Xét phương trình $\\sqrt{x^2-4x+5}=x-1$. Mệnh đề: Bình phương hai vế thu được phương trình $x^2-4x+5=x^2-2x+1$.",
-        "choices": [
-          "Đúng",
-          "Sai"
-        ],
-        "answer": 0,
-        "explanation": "Ta có $(x-1)^2=x^2-2x+1$, nên sau khi bình phương hai vế thu được đúng phương trình đã cho."
-      },
-      {
-        "text": "Câu 13c. Xét phương trình $\\sqrt{x^2-4x+5}=x-1$. Mệnh đề: Phương trình có đúng $1$ nghiệm.",
-        "choices": [
-          "Đúng",
-          "Sai"
-        ],
-        "answer": 0,
-        "explanation": "Từ $x^2-4x+5=x^2-2x+1$ suy ra $-4x+5=-2x+1\\Rightarrow x=2$. Thử lại thấy thỏa mãn nên phương trình có đúng $1$ nghiệm."
-      },
-      {
-        "text": "Câu 13d. Xét phương trình $\\sqrt{x^2-4x+5}=x-1$. Mệnh đề: Tổng các nghiệm bằng $3$.",
-        "choices": [
-          "Đúng",
-          "Sai"
-        ],
-        "answer": 1,
-        "explanation": "Phương trình chỉ có nghiệm $x=2$, nên tổng các nghiệm bằng $2$, không phải $3$."
-      },
-      {
-        "text": "Câu 14. Từ nhà $A$ đến cột điện $B$ cách nhau $12\\,\\text{m}$. Một người đi từ $A$ theo phương tạo với $AB$ góc $60^\\circ$ được $8\\,\\text{m}$ đến điểm $C$. Tính độ dài $BC$.",
-        "type": "fill",
-        "answerText": "4\\sqrt{7}",
-        "explanation": "Áp dụng định lý cosin trong tam giác $ABC$: $BC^2=AB^2+AC^2-2\\cdot AB\\cdot AC\\cdot\\cos60^\\circ=12^2+8^2-2\\cdot12\\cdot8\\cdot\\dfrac12=112$. Suy ra $BC=4\\sqrt7$."
-      },
-      {
-        "text": "Câu 15. Từ các chữ số $0,1,2,3,4,5$, lập được bao nhiêu số tự nhiên có $3$ chữ số khác nhau?",
-        "type": "fill",
-        "answerText": "100",
-        "explanation": "Hàng trăm có $5$ cách chọn (không được chọn $0$), hàng chục có $5$ cách, hàng đơn vị có $4$ cách. Tổng cộng $5\\cdot5\\cdot4=100$ số."
-      },
-      {
-        "text": "Câu 16. Dùng $3$ số hạng đầu tiên của khai triển $(3+0.01)^5$ để tính gần đúng $3.01^5$ (làm tròn đến hàng đơn vị).",
-        "type": "fill",
-        "answerText": "244",
-        "explanation": "Ba số hạng đầu là $3^5+5\\cdot3^4\\cdot0.01+\\mathrm{C}_5^2\\cdot3^3\\cdot0.01^2=243+4.05+0.027=247.077$. Làm tròn đến hàng đơn vị được $247$."
-      },
-      {
-        "text": "Câu 17. Trong mặt phẳng $Oxy$, cho tam giác $A(1;2),\\ B(5;2),\\ C(3;6)$. Tính tọa độ trọng tâm $G$ của tam giác.",
-        "type": "fill",
-        "answerText": "G(3;\\frac{10}{3})",
-        "explanation": "Trọng tâm tam giác có tọa độ là trung bình cộng tọa độ ba đỉnh: $G\\left(\\dfrac{1+5+3}{3};\\dfrac{2+2+6}{3}\\right)=G\\left(3;\\dfrac{10}{3}\\right)$."
-      },
-      {
-        "text": "Câu 18a. Có $6$ cuốn sách Toán khác nhau và $4$ cuốn sách Lý khác nhau. Hỏi có bao nhiêu cách xếp tất cả các cuốn sách lên giá?",
-        "type": "fill",
-        "answerText": "10!",
-        "explanation": "Có tất cả $10$ cuốn sách khác nhau nên số cách xếp là $10!$."
-      },
-      {
-        "text": "Câu 18b. Có $6$ cuốn sách Toán khác nhau và $4$ cuốn sách Lý khác nhau. Nếu $4$ cuốn sách Lý phải đứng cạnh nhau thì có bao nhiêu cách xếp tất cả các cuốn sách lên giá?",
-        "type": "fill",
-        "answerText": "7!\\times4!",
-        "explanation": "Gộp $4$ cuốn Lý thành một khối, khi đó có $7$ đối tượng nên có $7!$ cách sắp xếp. Bên trong khối Lý có $4!$ cách. Tổng số cách là $7!\\times4!$."
-      },
-      {
-        "text": "Câu 19a. Trong mặt phẳng $Oxy$, cho điểm $A(2;3)$ và đường thẳng $\\Delta:2x-3y+5=0$. Viết phương trình đường thẳng $d$ đi qua $A$ và vuông góc với $\\Delta$.",
-        "type": "fill",
-        "answerText": "3x+2y-12=0",
-        "explanation": "Đường thẳng $\\Delta$ có vectơ pháp tuyến $(2;-3)$ nên một vectơ chỉ phương là $(3;2)$. Vì $d\\perp\\Delta$ nên $d$ có vectơ pháp tuyến $(3;2)$. Đi qua $A(2;3)$ nên $d:3(x-2)+2(y-3)=0\\Leftrightarrow 3x+2y-12=0$."
-      },
-      {
-        "text": "Câu 19b. Trong mặt phẳng $Oxy$, cho điểm $A(2;3)$ và đường thẳng $\\Delta:2x-3y+5=0$. Viết phương trình đường tròn tâm $A$ tiếp xúc với $\\Delta$.",
-        "type": "fill",
-        "answerText": "(x-2)^2+(y-3)^2=\\left(\\frac{10}{\\sqrt{13}}\\right)^2",
-        "explanation": "Phương trình đường tròn tâm $A(2;3)$ có dạng $(x-2)^2+(y-3)^2=r^2$, với $r$ là khoảng cách từ $A$ đến đường thẳng $\\Delta$."
-      },
-      {
-        "text": "Câu 20. Tìm hệ số của $x^4$ trong khai triển $(1+2x+3x^2)^8$.",
-        "type": "fill",
-        "answerText": "6440",
-        "explanation": "Xét các cách tạo ra bậc $4$: lấy bốn thừa số $2x$; hoặc lấy hai thừa số $2x$ và một thừa số $3x^2$; hoặc lấy hai thừa số $3x^2$. Cộng các hệ số tương ứng sẽ được hệ số của $x^4$."
-      }
-    ]
-  }
-]
+{
+  "title": "Quiz Hội nhập kinh tế quốc tế",
+  "shuffle": true,
+  "timeLimit": 600,
+  "questions": [
+    {
+      "text": "Câu 1. Một quốc gia cho rằng chỉ cần phát triển mạnh thị trường trong nước, không cần tham gia sâu vào các quan hệ kinh tế quốc tế vẫn có thể duy trì tăng trưởng lâu dài. Theo lý luận về hội nhập kinh tế quốc tế, nhận định này không phù hợp chủ yếu vì:",
+      "choices": [
+        "Không phù hợp với xu hướng toàn cầu hóa và phân công lao động quốc tế",
+        "Không có đủ nguồn lực tự nhiên",
+        "Không có dân số đông",
+        "Không có doanh nghiệp lớn"
+      ],
+      "answer": 0,
+      "explanation": ""
+    },
+    {
+      "text": "Câu 2. Trong điều kiện lực lượng sản xuất ngày càng phát triển, các quốc gia có xu hướng mở rộng quan hệ kinh tế ra bên ngoài và tham gia sâu vào thị trường thế giới. Điều này phản ánh:",
+      "choices": [
+        "Nhu cầu chủ quan của từng quốc gia",
+        "Tính tất yếu khách quan của hội nhập kinh tế quốc tế",
+        "Sự suy giảm vai trò của thương mại",
+        "Xu hướng đóng cửa nền kinh tế"
+      ],
+      "answer": 1,
+      "explanation": ""
+    },
+    {
+      "text": "Câu 3. Một quốc gia tham gia thương mại quốc tế nhưng không chấp nhận các quy định chung về tiêu chuẩn, thuế quan và cạnh tranh. Trong trường hợp này, có thể nhận định rằng quốc gia đó:",
+      "choices": [
+        "Đã hội nhập đầy đủ",
+        "Hội nhập ở mức hình thức, chưa thực chất",
+        "Không cần hội nhập",
+        "Đã hội nhập toàn diện"
+      ],
+      "answer": 1,
+      "explanation": ""
+    },
+    {
+      "text": "Câu 4. So với hợp tác kinh tế quốc tế thông thường, hội nhập kinh tế quốc tế có điểm khác biệt cơ bản là các quốc gia không chỉ hợp tác mà còn:",
+      "choices": [
+        "Trao đổi hàng hóa nhiều hơn",
+        "Tăng số lượng đối tác",
+        "Cam kết và tuân thủ các quy tắc chung mang tính ràng buộc",
+        "Giảm cạnh tranh"
+      ],
+      "answer": 2,
+      "explanation": ""
+    },
+    {
+      "text": "Câu 5. Trong bối cảnh toàn cầu hóa hiện nay, nếu một quốc gia lựa chọn chính sách “đóng cửa” để bảo vệ nền kinh tế trong nước, về lâu dài điều này có thể dẫn đến:",
+      "choices": [
+        "Tăng trưởng ổn định và bền vững",
+        "Nâng cao năng lực cạnh tranh",
+        "Giảm sự phụ thuộc quốc tế",
+        "Hạn chế khả năng tiếp cận công nghệ và thị trường"
+      ],
+      "answer": 3,
+      "explanation": ""
+    }
+  ]
+}
